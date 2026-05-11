@@ -73,11 +73,13 @@ mac:
         - x64
         - arm64
   darkModeSupport: true
-  hardenedRuntime: true
+  # Code signing + notarization disabled for now — KNA Desktop ships as an
+  # unsigned dmg (users run `xattr -dr com.apple.quarantine` on first launch).
+  # Re-enable when we have Apple Developer ID Application cert + notary creds.
+  hardenedRuntime: false
   gatekeeperAssess: false
-  entitlements: entitlements.mac.plist
-  entitlementsInherit: entitlements.mac.plist
-  notarize: true
+  identity: null
+  notarize: false
   extendInfo:
     NSMicrophoneUsageDescription: KNA Desktop 在使用语音功能时需要访问麦克风
     NSCameraUsageDescription: KNA Desktop 在使用视频功能时需要访问摄像头
