@@ -102,10 +102,20 @@ mac:
   # ships in resources/entitlements.mac.plist (electron's default).
   hardenedRuntime: true
   gatekeeperAssess: false
-  # electron-builder 26.x: notarize is a boolean. The team ID + Apple ID + app-
-  # specific password are read from APPLE_TEAM_ID / APPLE_ID /
-  # APPLE_APP_SPECIFIC_PASSWORD env vars (set in build-mac.yml from GH secrets).
-  notarize: true
+  # notarize: false — we ship signed-only (no Apple Notary) for v0.2.0.
+  # Two reasons:
+  #   1. GHA macos runners' xcrun notarytool URLSession drops at ~54 min into
+  #      polling on first-team submissions (consistent failure across 3 runs,
+  #      both Apple-ID and App Store Connect API key auth paths). Apple's
+  #      first-time team review window happens to hit exactly that bug window.
+  #   2. Signing alone unlocks the headline UX wins — Squirrel.Mac auto-update
+  #      works (it only requires a valid Developer ID signature, not notary),
+  #      and first-launch friction drops from "user runs xattr command" to
+  #      "user right-clicks → Open once".
+  # Proper notarize comes back later via a separate notarize-and-staple
+  # workflow with our own robust polling loop, so the build job doesn't have
+  # to keep notarytool's flaky URLSession alive for an hour.
+  notarize: false
   extendInfo:
     NSMicrophoneUsageDescription: KNA Desktop 在使用语音功能时需要访问麦克风
     NSCameraUsageDescription: KNA Desktop 在使用视频功能时需要访问摄像头
