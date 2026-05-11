@@ -16,7 +16,10 @@ permissions:
 jobs:
   build:
     runs-on: macos-14   # arm64 runner — matches our primary target
-    timeout-minutes: 60
+    # 120 min — Apple notarytool is slow on a team's first few submissions
+    # (extra Apple review for unknown signers). Subsequent builds will fit
+    # comfortably in <30 min once the team is recognized.
+    timeout-minutes: 120
 
     steps:
       - name: Checkout
