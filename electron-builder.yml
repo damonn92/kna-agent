@@ -88,7 +88,9 @@ dmg:
   # Explicit volume size prevents dmg-builder@1.2.0 auto-calculation from
   # underestimating (causes "No space left on device" for large app bundles).
   # The final .dmg is bzip2-compressed, so this only affects the temp volume.
-  size: 2g
+  # Reduced 2g → 900m: our .app is ~700MB, 900MB temp leaves headroom for
+  # APFS metadata but doesn't blow up small dev partitions.
+  size: 900m
   background: resources/dmg-background.png
   icon: resources/icons/icon.icns
   iconSize: 100
