@@ -61,6 +61,17 @@ jobs:
       - name: Type check
         run: pnpm run typecheck
 
+      # Decode the App Store Connect API key from base64 → temp .p8 file so
+      # electron/notarize can pass its path to `xcrun notarytool`. The .p8
+      # never lives on disk in source form, only in this ephemeral location
+      # under the runner's $RUNNER_TEMP (auto-cleaned on job exit).
+      - name: Stage App Store Connect API key
+        run: |
+          mkdir -p "$RUNNER_TEMP/notary"
+          echo "${{ secrets.APPLE_API_KEY }}" | base64 --decode > "$RUNNER_TEMP/notary/AuthKey.p8"
+          chmod 600 "$RUNNER_TEMP/notary/AuthKey.p8"
+          echo "APPLE_API_KEY=$RUNNER_TEMP/notary/AuthKey.p8" >> $GITHUB_ENV
+
       - name: Build dmg (signed + notarized)
         env:
           # Apple Developer ID Application cert + password — electron-builder
@@ -68,10 +79,14 @@ jobs:
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           CSC_IDENTITY_AUTO_DISCOVERY: 'true'
-          # Notarytool creds — Apple ID + app-specific password (not your
-          # AppleID password). Team ID matches the one in electron-builder.yml.
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          # Notarytool — using App Store Connect API key (JWT-based auth).
+          # APPLE_API_KEY is set to the .p8 file path in the previous step.
+          # This path is more reliable than APPLE_ID+APPLE_APP_SPECIFIC_PASSWORD
+          # under load (Apple's notary polling endpoint is less flaky for JWT).
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          # APPLE_API_KEY env var is exported in the staging step above.
+          # APPLE_TEAM_ID still needed for hardened-runtime + entitlements lookup.
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           SKIP_PREINSTALLED_SKILLS: '1'   # speeds up first-pass builds; skill bundle can be re-enabled when needed
         run: pnpm run package:mac:local
