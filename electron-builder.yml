@@ -93,13 +93,17 @@ mac:
         - x64
         - arm64
   darkModeSupport: true
-  # Code signing + notarization disabled for now — KNA Desktop ships as an
-  # unsigned dmg (users run `xattr -dr com.apple.quarantine` on first launch).
-  # Re-enable when we have Apple Developer ID Application cert + notary creds.
-  hardenedRuntime: false
+  # Code signing + notarization (Apple Developer ID, team 9SZ4Y9U2U7).
+  # electron-builder picks up:
+  #   - CSC_LINK (base64-encoded .p12 cert)   → from GHA secret
+  #   - CSC_KEY_PASSWORD (.p12 password)      → from GHA secret
+  #   - APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD / APPLE_TEAM_ID → notarytool creds
+  # hardenedRuntime is required by Apple's notary service; entitlements file
+  # ships in resources/entitlements.mac.plist (electron's default).
+  hardenedRuntime: true
   gatekeeperAssess: false
-  identity: null
-  notarize: false
+  notarize:
+    teamId: "9SZ4Y9U2U7"
   extendInfo:
     NSMicrophoneUsageDescription: KNA Desktop 在使用语音功能时需要访问麦克风
     NSCameraUsageDescription: KNA Desktop 在使用视频功能时需要访问摄像头
