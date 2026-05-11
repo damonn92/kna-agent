@@ -52,6 +52,9 @@ jobs:
       - name: Download uv binary (OpenClaw runtime dep)
         run: pnpm run uv:download
 
+      - name: Generate extension bridge stubs (required for typecheck)
+        run: pnpm run ext:bridge
+
       - name: Type check
         run: pnpm run typecheck
 
