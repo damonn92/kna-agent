@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <mask id="kna-knockout">
+      <rect width="120" height="120" fill="#fff"/>
+      <g fill="#000">
+        <rect x="40" y="32" width="12" height="56"/>
+        <path d="M52 60 L74 36 L86 36 L64 60 Z"/>
+        <path d="M52 60 L74 84 L86 84 L64 60 Z"/>
+      </g>
+    </mask>
+  </defs>
+  <circle cx="60" cy="60" r="58" fill="#CC785C" mask="url(#kna-knockout)"/>
+</svg>
