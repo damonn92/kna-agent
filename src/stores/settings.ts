@@ -89,7 +89,10 @@ const defaultSettings = {
   proxyBypassRules: '<local>;localhost;127.0.0.1;::1',
   updateChannel: 'stable' as UpdateChannel,
   autoCheckUpdate: true,
-  autoDownloadUpdate: false,
+  // ChatGPT/Claude-style: auto-pull new builds in the background as soon
+  // as they're detected. The user sees a coral 🆕 chip in the topbar
+  // once the download finishes and clicks to install.
+  autoDownloadUpdate: true,
   sidebarCollapsed: false,
   devModeUnlocked: false,
   setupComplete: false,

@@ -65,7 +65,15 @@ export class AppUpdater extends EventEmitter {
       logger.error('[Updater] AppUpdater emitted error:', error);
     });
     
-    autoUpdater.autoDownload = false;
+    // ChatGPT/Claude-style auto-update flow:
+    //   1. autoDownload = true   → as soon as a newer release is detected on
+    //      GitHub, electron-updater silently pulls the dmg in the background.
+    //   2. autoInstallOnAppQuit = true → if the user just closes the app,
+    //      the bundled installer kicks in next launch.
+    //   3. Renderer (UpdateIndicator) shows a coral 🆕 icon once the new
+    //      version is downloaded; clicking sends IPC `update:install` which
+    //      calls quitAndInstall() and restarts immediately.
+    autoUpdater.autoDownload = true;
     autoUpdater.autoInstallOnAppQuit = true;
     
     autoUpdater.logger = {
@@ -78,24 +86,31 @@ export class AppUpdater extends EventEmitter {
     const version = app.getVersion();
     const channel = detectChannel(version);
 
-    if (!OSS_BASE_URL) {
-      // No feed URL configured — auto-updates disabled. electron-updater will
-      // remain idle (checkForUpdates becomes a no-op). KNA Desktop ships
-      // without auto-update until our distribution CDN is wired up.
-      logger.info(`[Updater] Disabled (no KNA_UPDATE_FEED_URL set). Version: ${version}, channel: ${channel}`);
-    } else {
+    // Channel is detected from the running app's version string ("alpha",
+    // "beta", "latest"). electron-updater appends it to the yml filename
+    // when reading release metadata.
+    autoUpdater.channel = channel;
+
+    if (OSS_BASE_URL) {
+      // Dev / staging override — point at a self-hosted feed (e.g. an OSS
+      // bucket per-channel) instead of the GitHub provider baked into
+      // app-update.yml by electron-builder. Useful for testing fresh
+      // releases without uploading them to GitHub.
       const feedUrl = `${OSS_BASE_URL}/${channel}`;
-      logger.info(`[Updater] Version: ${version}, channel: ${channel}, feedUrl: ${feedUrl}`);
-
-      // Set channel so electron-updater requests the correct yml filename.
-      // e.g. channel "alpha" → alpha-mac.yml, channel "latest" → latest-mac.yml
-      autoUpdater.channel = channel;
-
+      logger.info(`[Updater] Version: ${version}, channel: ${channel}, feedUrl: ${feedUrl} (KNA_UPDATE_FEED_URL override)`);
       autoUpdater.setFeedURL({
         provider: 'generic',
         url: feedUrl,
         useMultipleRangeRequest: false,
       });
+    } else {
+      // Production: rely on the GitHub provider configured in
+      // electron-builder.yml (publish: github). electron-builder bakes
+      // an app-update.yml into the packaged app pointing at
+      // https://github.com/damonn92/kna-agent/releases — electron-updater
+      // reads it at runtime and queries the GitHub Releases API for the
+      // latest dmg matching this channel.
+      logger.info(`[Updater] Version: ${version}, channel: ${channel}, feed: github (damonn92/kna-agent)`);
     }
 
     this.setupListeners();

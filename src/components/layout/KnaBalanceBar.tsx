@@ -25,6 +25,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSettingsStore } from '@/stores/settings';
+import { UpdateIndicator } from './UpdateIndicator';
 
 const BALANCE_ENDPOINT = 'https://chat.wearekna.com/api/balance';
 const LOGIN_URL = 'https://code.wearekna.com/desktop-login';
@@ -137,6 +138,10 @@ export function KnaBalanceBar(): React.ReactElement | null {
 
       {/* Right: balance / actions */}
       <div className="flex items-center gap-2">
+        {/* Auto-update chip — only renders when status is downloading /
+            downloaded / error. Invisible during routine background polls. */}
+        <UpdateIndicator />
+
         {!loggedIn && (
           <button
             type="button"

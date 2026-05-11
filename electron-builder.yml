@@ -61,9 +61,18 @@ asarUnpack:
 # own process — @electron/rebuild must NOT touch them.
 npmRebuild: false
 
-# Auto-update configuration — disabled in initial KNA build; will wire up to
-# Cloudflare R2 / KNA OSS once distribution flow is finalized.
-publish: null
+# Auto-update configuration.
+# electron-updater reads this section to bake an `app-update.yml` into the
+# packaged app. At runtime the updater queries GitHub Releases API on a
+# timer; with `autoDownload = true` (see electron/main/updater.ts) a newer
+# dmg is pulled silently in the background while the app keeps running.
+# When the download finishes, the renderer's UpdateIndicator shows a
+# coral 🆕 chip; clicking it sends IPC `update:install` → quitAndInstall().
+publish:
+  provider: github
+  owner: damonn92
+  repo: kna-agent
+  releaseType: release
 
 # macOS Configuration
 mac:

@@ -100,10 +100,11 @@ function createDefaultSettings(): AppSettings {
     proxyAllServer: '',
     proxyBypassRules: '<local>;localhost;127.0.0.1;::1',
 
-    // Update
+    // Update — ChatGPT/Claude style: poll + auto-download in the background.
+    // User opts out via Settings → Updates if they prefer manual installs.
     updateChannel: 'stable',
     autoCheckUpdate: true,
-    autoDownloadUpdate: false,
+    autoDownloadUpdate: true,
     skippedVersions: [],
 
     // UI State
