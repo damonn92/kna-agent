@@ -56,6 +56,13 @@ export interface AppSettings {
   selectedBundles: string[];
   enabledSkills: string[];
   disabledSkills: string[];
+
+  // KNA SSO (browser-login + kna-desktop:// deep-link callback).
+  // The token is the user's sk-kna-... API key for code.wearekna.com; we
+  // also keep the linked email so the UI can show "登录为 user@…" and the
+  // balance widget can scope its lookups.
+  knaToken: string;
+  knaEmail: string;
 }
 
 /**
@@ -107,6 +114,10 @@ function createDefaultSettings(): AppSettings {
     selectedBundles: ['productivity', 'developer'],
     enabledSkills: [],
     disabledSkills: [],
+
+    // KNA SSO — empty until the user authorizes via /desktop-login.
+    knaToken: '',
+    knaEmail: '',
   };
 }
 

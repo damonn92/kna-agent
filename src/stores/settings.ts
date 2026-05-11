@@ -19,6 +19,12 @@ interface SettingsState {
   launchAtStartup: boolean;
   telemetryEnabled: boolean;
 
+  // KNA SSO — mirrors AppSettings.knaToken / AppSettings.knaEmail on the
+  // main side. Populated either by init() hydrating from /api/settings
+  // or by the post-SSO settings reload in useKnaDeepLink.
+  knaToken: string;
+  knaEmail: string;
+
   // Gateway
   gatewayAutoStart: boolean;
   gatewayPort: number;
@@ -71,6 +77,8 @@ const defaultSettings = {
   startMinimized: false,
   launchAtStartup: false,
   telemetryEnabled: true,
+  knaToken: '',
+  knaEmail: '',
   gatewayAutoStart: true,
   gatewayPort: 18789,
   proxyEnabled: false,

@@ -4,6 +4,17 @@ copyright: Copyright © 2026 KNA Inc.
 compression: maximum
 artifactName: ${productName}-${version}-${os}-${arch}.${ext}
 
+# Register kna-desktop:// custom URL scheme so the system browser can hand
+# the SSO callback (kna-desktop://login?token=...) back to this app after a
+# user logs in on code.wearekna.com. electron-builder writes:
+#   - CFBundleURLTypes on macOS
+#   - Windows registry HKCR\kna-desktop on Win
+#   - MimeType x-scheme-handler/kna-desktop in the .desktop file on Linux
+protocols:
+  - name: KNA Desktop
+    schemes:
+      - kna-desktop
+
 directories:
   output: release
   buildResources: resources

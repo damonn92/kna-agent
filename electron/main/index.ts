@@ -52,6 +52,12 @@ import { deviceOAuthManager } from '../utils/device-oauth';
 import { browserOAuthManager } from '../utils/browser-oauth';
 import { whatsAppLoginManager } from '../utils/whatsapp-login';
 import { syncAllProviderAuthToRuntime } from '../services/providers/provider-runtime-sync';
+import {
+  registerKnaProtocol,
+  setKnaMainWindow,
+  extractDeepLinkFromArgv,
+  handleDeepLink,
+} from './kna-deep-link';
 
 const WINDOWS_APP_USER_MODEL_ID = 'app.clawx.desktop';
 const isE2EMode = process.env.CLAWX_E2E === '1';
@@ -95,6 +101,20 @@ if (!gotElectronLock) {
   console.info('[ClawX] Another instance already holds the single-instance lock; exiting duplicate process');
   app.exit(0);
 }
+
+// Register the kna-desktop:// URL scheme so the OS can hand SSO callbacks
+// (kna-desktop://login?token=...) back to this app. Must run before
+// app.whenReady() — on macOS the OS may otherwise dispatch the URL to a
+// fresh Electron instance instead of routing it here.
+registerKnaProtocol(process.argv);
+
+// macOS-only: the deep-link arrives via open-url. Subscribing early ensures
+// the URL is captured even when it fires before the window exists (cold
+// launch case — kna-deep-link buffers the link until setKnaMainWindow()).
+app.on('open-url', (event, url) => {
+  event.preventDefault();
+  handleDeepLink(url);
+});
 let releaseProcessInstanceFileLock: () => void = () => {};
 let gotFileLock = true;
 if (gotElectronLock && !isE2EMode) {
@@ -279,6 +299,17 @@ function createMainWindow(): BrowserWindow {
   });
 
   mainWindow = win;
+
+  // Hand the window ref to the KNA deep-link handler so buffered SSO
+  // callbacks (delivered before the renderer was alive) get flushed.
+  // Also covers the cold-launch case on Win/Linux where the OS passed
+  // the URL through argv.
+  setKnaMainWindow(win);
+  const coldLaunchLink = extractDeepLinkFromArgv(process.argv);
+  if (coldLaunchLink) {
+    handleDeepLink(coldLaunchLink);
+  }
+
   return win;
 }
 
@@ -565,8 +596,16 @@ if (gotTheLock) {
   });
 
   // When a second instance is launched, focus the existing window instead.
-  app.on('second-instance', () => {
+  // On Windows / Linux this is also where deep-link URLs (kna-desktop://...)
+  // arrive — the OS spawns a second process with the URL appended to argv,
+  // which our single-instance lock redirects here.
+  app.on('second-instance', (_event, argv) => {
     logger.info('Second ClawX instance detected; redirecting to the existing window');
+
+    const deepLink = extractDeepLinkFromArgv(argv);
+    if (deepLink) {
+      handleDeepLink(deepLink);
+    }
 
     const focusRequest = requestSecondInstanceFocus(
       mainWindowFocusState,

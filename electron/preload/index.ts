@@ -144,6 +144,9 @@ const electronAPI = {
         'openclaw:getConfigDir',
         'openclaw:getSkillsDir',
         'openclaw:getCliCommand',
+        // KNA browser-SSO: applies the token + email pulled out of the
+        // kna-desktop://login deep-link callback.
+        'kna:applySso',
       ];
 
       if (validChannels.includes(channel)) {
@@ -187,6 +190,9 @@ const electronAPI = {
         'oauth:success',
         'oauth:error',
         'openclaw:cli-installed',
+        // KNA SSO deep-link: kna-desktop://login?token=... arrives here
+        // after a successful browser login on code.wearekna.com.
+        'kna:deep-link',
       ];
 
       if (validChannels.includes(channel) || channel.startsWith('ext:')) {
@@ -236,6 +242,7 @@ const electronAPI = {
         'oauth:code',
         'oauth:success',
         'oauth:error',
+        'kna:deep-link',
       ];
 
       if (validChannels.includes(channel) || channel.startsWith('ext:')) {

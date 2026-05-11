@@ -22,6 +22,7 @@ import {
 import { syncProxyConfigToOpenClaw } from '../utils/openclaw-proxy';
 import { buildOpenClawControlUiUrl } from '../utils/openclaw-control-ui';
 import { logger } from '../utils/logger';
+import { applyKnaSso } from '../services/kna-sso';
 import { resolveAgentIdFromChannel } from '../utils/agent-config';
 import { resolveAccountIdFromSessionHistory } from '../utils/session-util';
 import {
@@ -2064,6 +2065,21 @@ function registerProviderHandlers(gatewayManager: GatewayManager): void {
         return { valid: false, error: String(error) };
       }
     }
+  );
+
+  // KNA browser-SSO callback. The renderer parses the kna-desktop://login
+  // deep-link, hands the token + email here; we persist + provision the
+  // KNA provider account + schedule a gateway restart so the new key is
+  // picked up on the next request.
+  ipcMain.handle(
+    'kna:applySso',
+    async (_event, payload: { token: string; email?: string }) => {
+      return await applyKnaSso(
+        payload?.token ?? '',
+        payload?.email ?? '',
+        gatewayManager,
+      );
+    },
   );
 }
 
