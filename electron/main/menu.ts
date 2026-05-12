@@ -176,13 +176,13 @@ export function createMenu(): void {
         {
           label: 'Documentation',
           click: async () => {
-            await shell.openExternal('https://claw-x.com');
+            await shell.openExternal('https://wearekna.com/agent');
           },
         },
         {
           label: 'Report Issue',
           click: async () => {
-            await shell.openExternal('https://github.com/ValueCell-ai/ClawX/issues');
+            await shell.openExternal('https://github.com/damonn92/kna-agent/issues');
           },
         },
         { type: 'separator' },

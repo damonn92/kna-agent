@@ -1,6 +1,6 @@
 name: Build macOS dmg
 
-# Builds an unsigned KNA Desktop .dmg on GitHub-hosted macOS runners.
+# Builds an unsigned KNA Agent .dmg on GitHub-hosted macOS runners.
 # Triggered manually (workflow_dispatch) or on tag push (v*).
 # Local dev machines on tight disks would otherwise spend hours on this.
 
