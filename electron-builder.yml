@@ -132,18 +132,18 @@ mac:
     NSCameraUsageDescription: KNA Desktop 在使用视频功能时需要访问摄像头
 
 dmg:
-  # Bumped temp volume to 1500m (was 900m). dmg-builder@1.2.0 on macOS 14
-  # GHA runners hits a "Unable to shrink:" bug when shrink headroom is
-  # tight after signing inflates the .app. 1500m gives ~700MB of slack
-  # which is plenty.
+  # Bumped temp volume to 1500m (was 900m). Gives ~700MB of headroom
+  # post-signing so dmg-builder doesn't have to fight for space.
   size: 1500m
-  # Force HFS+ filesystem inside the dmg instead of the default APFS.
-  # The empty-output shrink bug in dmgbuild 1.5.x only manifests on APFS
-  # disk images. HFS+ goes through a different shrink code path that
-  # works reliably. macOS still mounts HFS+ dmgs natively.
-  useHfs: true
-  # Use writeUpdateInfo: false to skip embedding update metadata that
-  # confuses certain hdiutil versions on the runner.
+  # Skip the dmgbuild shrink step entirely. dmg-builder@1.2.0 on macOS 14
+  # GHA runners has a known bug where `hdiutil resize -shrinkonly` returns
+  # empty output despite exit 0, which dmgbuild misinterprets as failure
+  # ("Unable to shrink: "). Without shrink, the dmg is slightly larger
+  # (matches our `size:` value), but the compression step (UDZO format)
+  # still runs, so final .dmg size is similar to compressed-shrunk.
+  shrink: false
+  # Skip optional update-info metadata write that occasionally trips
+  # hdiutil on the runner.
   writeUpdateInfo: false
   background: resources/dmg-background.png
   icon: resources/icons/icon.icns
