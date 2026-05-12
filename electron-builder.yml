@@ -2,7 +2,13 @@ appId: com.wearekna.desktop
 productName: KNA Desktop
 copyright: Copyright © 2026 KNA Inc.
 compression: maximum
-artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+# Use a hyphen-separated artifactName (NOT ${productName} which contains the
+# literal space "KNA Desktop"). electron-builder writes latest-mac.yml with
+# spaces converted to hyphens, while GitHub release assets URL-encode spaces
+# as dots — the three forms don't match and electron-updater 404s. Forcing
+# hyphens here keeps the on-disk filename, latest-mac.yml URLs, and GitHub
+# release asset URLs all aligned, so auto-update can find the file.
+artifactName: KNA-Desktop-${version}-${os}-${arch}.${ext}
 
 # Register kna-desktop:// custom URL scheme so the system browser can hand
 # the SSO callback (kna-desktop://login?token=...) back to this app after a
