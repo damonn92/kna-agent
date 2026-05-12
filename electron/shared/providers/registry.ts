@@ -103,8 +103,8 @@ export const PROVIDER_DEFINITIONS: ProviderDefinition[] = [
       api: 'openrouter',
       apiKeyEnv: 'OPENROUTER_API_KEY',
       headers: {
-        'HTTP-Referer': 'https://claw-x.com',
-        'X-OpenRouter-Title': 'ClawX',
+        'HTTP-Referer': 'https://wearekna.com/agent',
+        'X-OpenRouter-Title': 'KNA Agent',
       },
     },
   },
