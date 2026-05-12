@@ -1,7 +1,7 @@
 {
     "steps": {
         "welcome": {
-            "title": "Welcome to KNA Desktop",
+            "title": "Welcome to KNA Agent",
             "description": "Your AI assistant is ready to be configured"
         },
         "runtime": {
@@ -22,12 +22,12 @@
         },
         "complete": {
             "title": "All Set!",
-            "description": "KNA Desktop is ready to use"
+            "description": "KNA Agent is ready to use"
         }
     },
     "welcome": {
-        "title": "Welcome to KNA Desktop",
-        "description": "KNA Desktop is a graphical interface for OpenClaw, making it easy to use AI assistants across your favorite messaging platforms.",
+        "title": "Welcome to KNA Agent",
+        "description": "KNA Agent is a graphical interface for OpenClaw, making it easy to use AI assistants across your favorite messaging platforms.",
         "features": {
             "noCommand": "Zero command-line required",
             "modernUI": "Modern, beautiful interface",
@@ -113,7 +113,7 @@
     },
     "complete": {
         "title": "Setup Complete!",
-        "subtitle": "KNA Desktop is configured and ready to use. You can now start chatting with your AI assistant.",
+        "subtitle": "KNA Agent is configured and ready to use. You can now start chatting with your AI assistant.",
         "provider": "AI Provider",
         "components": "Components",
         "gateway": "Gateway",

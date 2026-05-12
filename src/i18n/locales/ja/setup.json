@@ -1,7 +1,7 @@
 {
     "steps": {
         "welcome": {
-            "title": "KNA Desktopへようこそ",
+            "title": "KNA Agentへようこそ",
             "description": "AIアシスタントの設定準備が整いました"
         },
         "runtime": {
@@ -22,12 +22,12 @@
         },
         "complete": {
             "title": "完了！",
-            "description": "KNA Desktopを使用する準備が整いました"
+            "description": "KNA Agentを使用する準備が整いました"
         }
     },
     "welcome": {
-        "title": "KNA Desktopへようこそ",
-        "description": "KNA DesktopはOpenClawのグラフィカルインターフェースで、お気に入りのメッセージングプラットフォームでAIアシスタントを簡単に使用できます。",
+        "title": "KNA Agentへようこそ",
+        "description": "KNA AgentはOpenClawのグラフィカルインターフェースで、お気に入りのメッセージングプラットフォームでAIアシスタントを簡単に使用できます。",
         "features": {
             "noCommand": "コマンドライン不要",
             "modernUI": "モダンで美しいインターフェース",
@@ -113,7 +113,7 @@
     },
     "complete": {
         "title": "セットアップ完了！",
-        "subtitle": "KNA Desktopの構成が完了し、使用準備が整いました。AIアシスタントとのチャットを開始できます。",
+        "subtitle": "KNA Agentの構成が完了し、使用準備が整いました。AIアシスタントとのチャットを開始できます。",
         "provider": "AI プロバイダー",
         "components": "コンポーネント",
         "gateway": "ゲートウェイ",

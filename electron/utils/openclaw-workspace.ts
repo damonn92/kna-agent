@@ -30,15 +30,15 @@ function isCurrentOpenClawPath(p: string): boolean {
 
 export function buildDefaultClawXIdentityContent(): string {
   return [
-    '# IDENTITY.md - ClawX',
+    '# IDENTITY.md - KNA Agent',
     '',
-    '- **Name:** ClawX',
+    '- **Name:** KNA Agent',
     '- **Creature:** desktop AI assistant',
     '- **Vibe:** concise, capable, and practical',
     '- **Emoji:** 🐾',
     '- **Avatar:**',
     '',
-    'ClawX uses a default desktop identity instead of chat-first bootstrap.',
+    'KNA Agent uses a default desktop identity instead of chat-first bootstrap.',
     '',
   ].join('\n');
 }
@@ -100,12 +100,12 @@ export async function ensureClawXIdentityFile(
   if (await fileExists(bootstrapPath)) {
     try {
       await unlink(bootstrapPath);
-      logger.info(`Removed chat-first bootstrap file from ClawX workspace (${resolvedWorkspaceDir})`);
+      logger.info(`Removed chat-first bootstrap file from KNA Agent workspace (${resolvedWorkspaceDir})`);
     } catch {
       logger.warn(`Failed to remove chat-first bootstrap file: ${bootstrapPath}`);
     }
   } else if (wroteIdentity) {
-    logger.info(`Seeded default ClawX identity for workspace (${resolvedWorkspaceDir})`);
+    logger.info(`Seeded default KNA Agent identity for workspace (${resolvedWorkspaceDir})`);
   }
 }
 
@@ -295,9 +295,9 @@ export async function repairClawXOnlyBootstrapFiles(): Promise<void> {
       if (before === '' && after === '') {
         try {
           await unlink(filePath);
-          logger.info(`Removed ClawX-only bootstrap file for re-seeding: ${file} (${workspaceDir})`);
+          logger.info(`Removed KNA Agent-only bootstrap file for re-seeding: ${file} (${workspaceDir})`);
         } catch {
-          logger.warn(`Failed to remove ClawX-only bootstrap file: ${filePath}`);
+          logger.warn(`Failed to remove KNA Agent-only bootstrap file: ${filePath}`);
         }
       }
     }
@@ -327,7 +327,7 @@ type EnsureClawXContextOptions = {
 async function mergeClawXContextOnce(options: EnsureClawXContextOptions = {}): Promise<MergeResult> {
   const contextDir = join(getResourcesDir(), 'context');
   if (!(await fileExists(contextDir))) {
-    logger.debug('ClawX context directory not found, skipping context merge');
+    logger.debug('KNA Agent context directory not found, skipping context merge');
     return { missing: 0, retryableMissing: 0 };
   }
 
@@ -386,7 +386,7 @@ async function mergeClawXContextOnce(options: EnsureClawXContextOptions = {}): P
       // First Run stripping happened and the ClawX section stayed identical.
       if (merged !== originalExisting) {
         await writeFile(targetPath, merged, 'utf-8');
-        logger.info(`Merged ClawX context into ${targetName} (${workspaceDir})`);
+        logger.info(`Merged KNA Agent context into ${targetName} (${workspaceDir})`);
       }
     }
   }
@@ -423,7 +423,7 @@ async function runEnsureClawXContext(options: EnsureClawXContextOptions): Promis
   let result = await mergeClawXContextOnce(options);
   if (result.retryableMissing === 0) {
     if (result.missing > 0) {
-      logger.debug(`ClawX context merge skipped ${result.missing} non-ready file(s)`);
+      logger.debug(`KNA Agent context merge skipped ${result.missing} non-ready file(s)`);
     }
     return;
   }
@@ -432,11 +432,11 @@ async function runEnsureClawXContext(options: EnsureClawXContextOptions): Promis
     await new Promise((r) => setTimeout(r, RETRY_INTERVAL_MS));
     result = await mergeClawXContextOnce(options);
     if (result.retryableMissing === 0) {
-      logger.info(`ClawX context merge completed after ${attempt} retry(ies)`);
+      logger.info(`KNA Agent context merge completed after ${attempt} retry(ies)`);
       return;
     }
-    logger.debug(`ClawX context merge: ${result.retryableMissing} startup file(s) still missing (retry ${attempt}/${MAX_RETRIES})`);
+    logger.debug(`KNA Agent context merge: ${result.retryableMissing} startup file(s) still missing (retry ${attempt}/${MAX_RETRIES})`);
   }
 
-  logger.warn(`ClawX context merge: ${result.retryableMissing} startup file(s) still missing after ${MAX_RETRIES} retries`);
+  logger.warn(`KNA Agent context merge: ${result.retryableMissing} startup file(s) still missing after ${MAX_RETRIES} retries`);
 }
