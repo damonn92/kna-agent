@@ -1,6 +1,6 @@
 {
   "name": "kna-desktop",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "KNA Agent — 用人民币驱动 Claude，面向中国大陆开发者与 SMB 用户的桌面 Claude 助手。Fork of ClawX (MIT). KNA-localized with preconfigured Anthropic relay and Chinese SMB skill packs.",
   "author": "KNA Inc. <info@wearekna.com>",
   "homepage": "https://wearekna.com",
