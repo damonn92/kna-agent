@@ -83,11 +83,14 @@ mac:
       to: cli/
   category: public.app-category.productivity
   icon: resources/icons/icon.icns
+  # Ship .zip only for v0.2.0 — dmg-builder@1.2.0 has a known hdiutil shrink
+  # bug on macOS 14 GHA runners ("Unable to shrink:" with empty hdiutil output
+  # despite exit 0). .zip works fine with electron-updater's auto-update flow
+  # (Squirrel.Mac unpacks zip directly), and macOS unzip → drag-to-Applications
+  # is a familiar pattern for users. We'll re-enable dmg once we either:
+  #   1. patch dmg-builder to handle the empty-shrink-output case, or
+  #   2. switch to a different dmg packer (e.g. create-dmg) post-build.
   target:
-    - target: dmg
-      arch:
-        - x64
-        - arm64
     - target: zip
       arch:
         - x64
