@@ -1,5 +1,5 @@
 appId: com.wearekna.desktop
-productName: KNA Desktop
+productName: KNA Agent
 copyright: Copyright © 2026 KNA Inc.
 compression: maximum
 # Use a hyphen-separated artifactName (NOT ${productName} which contains the
