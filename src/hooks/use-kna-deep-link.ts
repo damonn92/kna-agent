@@ -44,8 +44,10 @@ export function useKnaDeepLink(): void {
         return;
       }
 
-      if (!token.startsWith('sk-kna-')) {
-        toast.error('授权失败：API Key 必须以 sk-kna- 开头');
+      // sub2api generates keys with bare `sk-` prefix (followed by 64 hex chars).
+      // Reject image-only keys (sk-image-) and accidental Anthropic keys (sk-ant-).
+      if (!token.startsWith('sk-') || token.startsWith('sk-image-') || token.startsWith('sk-ant-')) {
+        toast.error('授权失败：API Key 格式不正确');
         return;
       }
 

@@ -46,11 +46,17 @@ export async function applyKnaSso(
   email: string,
   gatewayManager?: GatewayManager,
 ): Promise<ApplyKnaSsoResult> {
-  // Validate. The /desktop-login page should already enforce sk-kna-, but
-  // we double-check on the main side because the URL came from the OS.
+  // Validate. The /desktop-login page should already filter, but we
+  // double-check on the main side because the URL came from the OS.
+  // sub2api keys: `sk-` + 64 hex. Reject sk-image- (image-only group) and
+  // accidental sk-ant- (Anthropic) pastes.
   const trimmedToken = (token || '').trim();
-  if (!trimmedToken.startsWith('sk-kna-')) {
-    return { ok: false, error: 'Invalid KNA token format (must start with sk-kna-)' };
+  if (
+    !trimmedToken.startsWith('sk-')
+    || trimmedToken.startsWith('sk-image-')
+    || trimmedToken.startsWith('sk-ant-')
+  ) {
+    return { ok: false, error: 'Invalid KNA token format' };
   }
 
   const trimmedEmail = (email || '').trim();

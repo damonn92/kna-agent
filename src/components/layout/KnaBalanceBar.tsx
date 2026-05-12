@@ -76,7 +76,8 @@ export function KnaBalanceBar(): React.ReactElement | null {
   const inflightRef = useRef<AbortController | null>(null);
 
   const refresh = useCallback(async () => {
-    if (!knaToken || !knaToken.startsWith('sk-kna-')) {
+    // sub2api keys are bare `sk-` + 64 hex. Reject image-only and Anthropic keys.
+    if (!knaToken || !knaToken.startsWith('sk-') || knaToken.startsWith('sk-image-') || knaToken.startsWith('sk-ant-')) {
       setState({ kind: 'idle' });
       return;
     }
@@ -120,7 +121,10 @@ export function KnaBalanceBar(): React.ReactElement | null {
     };
   }, [refresh]);
 
-  const loggedIn = !!knaToken && knaToken.startsWith('sk-kna-');
+  const loggedIn = !!knaToken
+    && knaToken.startsWith('sk-')
+    && !knaToken.startsWith('sk-image-')
+    && !knaToken.startsWith('sk-ant-');
 
   return (
     <div className="no-drag flex h-9 shrink-0 items-center justify-between gap-3 border-b border-line bg-[#FBF8F2] px-4 text-[13px] text-ink dark:bg-[#1F1A17] dark:text-[#E5DCD0] dark:border-[#2C2520]">
