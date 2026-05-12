@@ -91,16 +91,17 @@ jobs:
           SKIP_PREINSTALLED_SKILLS: '1'   # speeds up first-pass builds; skill bundle can be re-enabled when needed
         run: pnpm run package:mac:local
 
-      - name: Verify zip produced
+      - name: Verify artifacts produced
         run: |
-          ls -lh release/*.zip
-          shasum -a 256 release/*.zip > release/SHA256SUMS
+          ls -lh release/*.dmg release/*.zip release/latest-mac.yml 2>&1
+          shasum -a 256 release/*.dmg release/*.zip > release/SHA256SUMS
 
-      - name: Upload zip artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: kna-desktop-mac
           path: |
+            release/*.dmg
             release/*.zip
             release/latest-mac.yml
             release/SHA256SUMS
@@ -112,6 +113,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
+            release/*.dmg
             release/*.zip
             release/latest-mac.yml
             release/SHA256SUMS
