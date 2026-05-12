@@ -72,17 +72,42 @@ jobs:
           chmod 600 "$RUNNER_TEMP/notary/AuthKey.p8"
           echo "APPLE_API_KEY=$RUNNER_TEMP/notary/AuthKey.p8" >> $GITHUB_ENV
 
-      - name: Build dmg (signed, notarize deferred)
+      - name: Build dmg (signed, notarize deferred) — retry up to 3x for hdiutil flake
         env:
-          # Apple Developer ID Application cert + password — electron-builder
-          # auto-imports the .p12 into a temporary keychain for the build.
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           CSC_IDENTITY_AUTO_DISCOVERY: 'true'
-          # Team ID still needed for hardened-runtime entitlements lookup.
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          SKIP_PREINSTALLED_SKILLS: '1'   # speeds up first-pass builds; skill bundle can be re-enabled when needed
-        run: pnpm run package:mac:local
+          SKIP_PREINSTALLED_SKILLS: '1'
+        run: |
+          set +e
+          # GHA macos-14 runners sometimes fail dmgbuild's hdiutil with
+          # "Device not configured" — apparently transient /dev/disk
+          # allocation glitches. Retry up to 3 times with cleanup in between.
+          for attempt in 1 2 3; do
+            echo "============================================================"
+            echo "Build attempt $attempt / 3"
+            echo "============================================================"
+            df -h /
+            pnpm run package:mac:local
+            rc=$?
+            if [ $rc -eq 0 ]; then
+              echo "✓ Build succeeded on attempt $attempt"
+              exit 0
+            fi
+            echo "✗ Build attempt $attempt failed (exit $rc)"
+            # Detach any leftover disk images so the next try has a fresh
+            # /dev/disk pool. The `awk` only picks /dev/diskN entries.
+            hdiutil info 2>/dev/null | awk '/^\/dev\/disk[0-9]+ /{print $1}' | while read d; do
+              echo "  detaching stale image $d"
+              hdiutil detach "$d" -force 2>&1 || true
+            done
+            # Remove partial outputs so next attempt starts clean
+            rm -rf release/*.dmg release/*.zip release/latest-mac.yml 2>/dev/null || true
+            sleep 30
+          done
+          echo "✗ All 3 build attempts failed"
+          exit 1
 
       # Notarize via custom polling loop — bypasses @electron/notarize's
       # `xcrun notarytool submit --wait` URLSession bug that drops the
