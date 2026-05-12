@@ -72,24 +72,99 @@ jobs:
           chmod 600 "$RUNNER_TEMP/notary/AuthKey.p8"
           echo "APPLE_API_KEY=$RUNNER_TEMP/notary/AuthKey.p8" >> $GITHUB_ENV
 
-      - name: Build dmg (signed + notarized)
+      - name: Build dmg (signed, notarize deferred)
         env:
           # Apple Developer ID Application cert + password — electron-builder
           # auto-imports the .p12 into a temporary keychain for the build.
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           CSC_IDENTITY_AUTO_DISCOVERY: 'true'
-          # Notarytool — using App Store Connect API key (JWT-based auth).
-          # APPLE_API_KEY is set to the .p8 file path in the previous step.
-          # This path is more reliable than APPLE_ID+APPLE_APP_SPECIFIC_PASSWORD
-          # under load (Apple's notary polling endpoint is less flaky for JWT).
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
-          # APPLE_API_KEY env var is exported in the staging step above.
-          # APPLE_TEAM_ID still needed for hardened-runtime + entitlements lookup.
+          # Team ID still needed for hardened-runtime entitlements lookup.
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           SKIP_PREINSTALLED_SKILLS: '1'   # speeds up first-pass builds; skill bundle can be re-enabled when needed
         run: pnpm run package:mac:local
+
+      # Notarize via custom polling loop — bypasses @electron/notarize's
+      # `xcrun notarytool submit --wait` URLSession bug that drops the
+      # connection at ~54 min into the wait. We instead:
+      #   1. submit --no-wait → get submission ID immediately
+      #   2. poll `notarytool info` every 30 s, each call a separate
+      #      short-lived HTTPS request (no long connection to maintain)
+      #   3. retry-once on transient network glitches per call
+      #   4. once Apple says "Accepted", `xcrun stapler staple` the dmg
+      # APPLE_API_KEY env var is the .p8 path exported by the earlier
+      # "Stage App Store Connect API key" step.
+      - name: Notarize + staple dmgs
+        env:
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+        run: |
+          set -e
+          for DMG in release/*.dmg; do
+            echo "============================================================"
+            echo "Submitting $DMG to Apple notary…"
+            echo "============================================================"
+
+            SUBMIT_JSON=$(xcrun notarytool submit "$DMG" \
+              --key "$APPLE_API_KEY" \
+              --key-id "$APPLE_API_KEY_ID" \
+              --issuer "$APPLE_API_ISSUER" \
+              --output-format json \
+              --no-wait)
+            echo "$SUBMIT_JSON"
+            SUBMISSION_ID=$(echo "$SUBMIT_JSON" | jq -r '.id')
+            echo "Submission ID: $SUBMISSION_ID"
+
+            # Poll up to 100 min @ 30 s intervals (200 attempts). Each call
+            # is a fresh HTTPS request so a connection drop affects only
+            # that single call, not the whole wait.
+            STATUS="In Progress"
+            for ((i=1; i<=200; i++)); do
+              INFO_JSON=$(xcrun notarytool info "$SUBMISSION_ID" \
+                --key "$APPLE_API_KEY" \
+                --key-id "$APPLE_API_KEY_ID" \
+                --issuer "$APPLE_API_ISSUER" \
+                --output-format json 2>/dev/null) || {
+                  # Single retry on transient failure
+                  sleep 10
+                  INFO_JSON=$(xcrun notarytool info "$SUBMISSION_ID" \
+                    --key "$APPLE_API_KEY" \
+                    --key-id "$APPLE_API_KEY_ID" \
+                    --issuer "$APPLE_API_ISSUER" \
+                    --output-format json 2>/dev/null) || INFO_JSON='{"status":"network-glitch"}'
+                }
+              STATUS=$(echo "$INFO_JSON" | jq -r '.status')
+              echo "  [poll $i/200] status=$STATUS"
+
+              case "$STATUS" in
+                "Accepted")
+                  echo "✓ Notarize accepted in $((i*30))s"
+                  break
+                  ;;
+                "Invalid"|"Rejected")
+                  echo "✗ Notarize REJECTED — full log below"
+                  xcrun notarytool log "$SUBMISSION_ID" \
+                    --key "$APPLE_API_KEY" \
+                    --key-id "$APPLE_API_KEY_ID" \
+                    --issuer "$APPLE_API_ISSUER" 2>&1 | head -100
+                  exit 1
+                  ;;
+                *)
+                  sleep 30
+                  ;;
+              esac
+            done
+
+            if [ "$STATUS" != "Accepted" ]; then
+              echo "✗ Notarize did not finish within 100 min"
+              exit 1
+            fi
+
+            echo "Stapling ticket into $DMG…"
+            xcrun stapler staple "$DMG"
+            xcrun stapler validate "$DMG"
+            echo "✓ $DMG fully notarized + stapled"
+          done
 
       - name: Verify artifacts produced
         run: |
