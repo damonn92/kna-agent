@@ -1,3 +1,9 @@
+/* KNA v0.4.0 webfonts — Inter (sans, with cv11/ss01 features) +
+   Source Serif 4 (display, headings, numbers, Chinese product names).
+   See design-source/v0.4.0/colors_and_type.css for the canonical token
+   reference. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -74,6 +80,104 @@
     --surface-modal: 48 29% 93%;
     --surface-input: 49 24% 91%;
     --surface-sidebar: 47 18% 90%;
+
+    /* ── KNA v0.4.0 Design System (Phase 1 foundation) ──────────────
+     *
+     * Pulled verbatim from `design-source/v0.4.0/colors_and_type.css`,
+     * the Claude Design hi-fi mockup spec (project 019e2335). Named
+     * tokens parallel to the shadcn HSL layer above — components can
+     * migrate onto them one page at a time over the v0.4.x cycle.
+     *
+     * Two coral nudges happen to the shadcn layer as well so existing
+     * Tailwind classes (primary buttons, focus rings) immediately pick
+     * up the KNA brand color without each component being touched:
+     *   --primary  →  coral #CC785C    (was generic blue)
+     *   --ring     →  coral-deep #B5573A
+     * Everything else stays on shadcn defaults until the per-page port.
+     * ─────────────────────────────────────────────────────────── */
+    --coral:        #CC785C;
+    --coral-deep:   #B5573A;
+    --coral-deeper: #8E3F26;
+    --coral-tint:   #F0DDD2;
+    --coral-wash:   #FAEEE6;
+
+    --cream:       #F5F1EB;
+    --cream-card:  #FBF8F2;
+    --paper:       #FFFFFF;
+
+    --ink:     #1F1B16;
+    --ink-2:   #3D362E;
+    --kna-muted:   #7A7068;
+    --kna-muted-2: #A39A91;
+
+    --kna-border:        #E7DFD2;
+    --kna-border-strong: #D9CDB8;
+
+    --ali:    #1677FF;
+    --wechat: #07C160;
+
+    --r-sm:   6px;
+    --r-md:  10px;
+    --r-lg:  14px;
+    --r-xl:  18px;
+    --r-pill: 999px;
+
+    --shadow-card: 0 1px 0 rgba(31,27,22,.02), 0 1px 2px rgba(31,27,22,.04);
+    --shadow-pop:  0 1px 0 rgba(31,27,22,.03),
+                   0 8px 24px -10px rgba(143,63,38,.18),
+                   0 2px 4px rgba(31,27,22,.04);
+
+    --space-1:  4px;
+    --space-2:  8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+
+    --serif: 'Source Serif 4', 'Songti SC', 'Noto Serif SC',
+             'Source Han Serif SC', Georgia, serif;
+    --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC',
+             'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue',
+             Arial, sans-serif;
+    --mono:  'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo,
+             Consolas, 'Liberation Mono', monospace;
+
+    --bonus-gradient: linear-gradient(95deg,
+                        #B5573A 0%,
+                        #CC785C 55%,
+                        #D88A6E 100%);
+
+    /* Semantic aliases — what UI code should reach for */
+    --bg-page:        var(--cream);
+    --bg-card:        var(--cream-card);
+    --bg-input:       var(--paper);
+    --bg-surface-2:   var(--paper);
+
+    --fg:             var(--ink);
+    --fg-2:           var(--ink-2);
+    --fg-muted:       var(--kna-muted);
+    --fg-placeholder: var(--kna-muted-2);
+
+    --accent:         var(--coral);
+    --accent-hover:   var(--coral-deep);
+    --accent-press:   var(--coral-deeper);
+    --accent-wash:    var(--coral-wash);
+    --accent-tint:    var(--coral-tint);
+
+    --link: var(--coral-deep);
+
+    /* Shadcn `--primary` + `--ring` remapped to KNA coral so existing
+     * Tailwind utilities (bg-primary, ring-ring, focus-visible) become
+     * coral-themed without touching component code.
+     *   #CC785C  ≈  HSL(14.5, 49.7%, 58.4%)
+     *   #B5573A  ≈  HSL(15.0, 50.9%, 46.5%)                          */
+    --primary: 14.5 50% 58.4%;
+    --primary-foreground: 0 0% 100%;
+    --ring: 15 51% 46.5%;
   }
 
   /* Neutral deep-gray dark palette */
@@ -84,8 +188,11 @@
     --card-foreground: 210 20% 96%;
     --popover: 240 3% 14%;
     --popover-foreground: 210 20% 96%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 210 40% 98%;
+    /* Coral stays a single brand color across themes — only the
+     * surrounding cream→graphite shifts. Dark mode uses coral-deep so
+     * the chroma reads against the deeper background. */
+    --primary: 15 51% 50%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 240 3% 18%;
     --secondary-foreground: 210 20% 96%;
     --muted: 240 3% 18%;
@@ -96,7 +203,7 @@
     --destructive-foreground: 210 20% 96%;
     --border: 240 3% 24%;
     --input: 240 3% 18%;
-    --ring: 217.2 91.2% 59.8%;
+    --ring: 15 51% 50%;
 
     /* In dark mode the three cream surfaces collapse onto existing
      * shadcn tokens:
@@ -253,4 +360,497 @@
   30% {
     transform: translateY(-4px);
   }
+}
+
+/* ================================================================
+   KNA v0.4.0 — App-level utility classes
+   ================================================================
+   Imported verbatim from design-source/v0.4.0/app.css (the Claude
+   Design hi-fi mockup output). Provides:
+     - .kna-app          window-chrome / shell grid
+     - .kna-tbar         macOS-style title bar (traffic lights + crumb)
+     - .kna-sb           240px sidebar + .kna-sb-{brand,nav,item,group,badge}
+     - .kna-bal          KNA balance bar pinned to sidebar bottom
+     - .kna-pg-*         page header + section utilities
+     - .kna-card, .kna-pill, .kna-btn, .kna-input, …  common bits
+
+   Components in src/pages/* will migrate onto these classes over the
+   v0.4.x cycle. Phase 1 (this commit): the foundation only — existing
+   components keep working unchanged on the shadcn HSL layer above.
+   ================================================================ */
+/* ================================================================
+   KNA Agent — app-level styles. Tokens come from colors_and_type.css.
+   This file adds: window chrome, sidebar, balance bar, common
+   utility classes used across the 7 pages.
+   ================================================================ */
+
+/* Each artboard is a "fake macOS window" — fixed size, no scrolling
+   at the frame level. Internal panes are what scroll, in production. */
+.kna-app {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 38px 1fr;
+  background: var(--cream);
+  color: var(--fg);
+  font-family: var(--sans);
+  font-feature-settings: "cv11", "ss01";
+  overflow: hidden;
+  border-radius: 12px;
+  isolation: isolate;
+}
+
+/* --- Title bar -------------------------------------------------- */
+.kna-tbar {
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  background: var(--cream-card);
+  border-bottom: 1px solid var(--border);
+  gap: 14px;
+  user-select: none;
+}
+.kna-tlights {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.kna-tlight {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.kna-tlight.r { background: #ff5f57; }
+.kna-tlight.y { background: #febc2e; }
+.kna-tlight.g { background: #28c840; }
+
+.kna-tbar .crumb {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.kna-tbar .crumb b {
+  color: var(--ink);
+  font-weight: 600;
+  font-family: var(--serif);
+  font-size: 13.5px;
+}
+.kna-tbar .crumb .sep { color: var(--muted-2); }
+
+.kna-tbar .upd {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--coral-wash);
+  border: 1px solid var(--coral-tint);
+  font-size: 11.5px;
+  color: var(--coral-deeper);
+  font-weight: 600;
+}
+.kna-tbar .upd .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--coral-deep);
+  box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.18);
+}
+.kna-tbar .upd.idle { background: transparent; border-color: var(--border); color: var(--muted); }
+.kna-tbar .upd.idle .dot { background: #58A65C; box-shadow: none; }
+
+/* --- Body grid -------------------------------------------------- */
+.kna-body { display: grid; min-height: 0; }
+.kna-body.with-sidebar { grid-template-columns: 240px 1fr; }
+.kna-body.with-sidebar.collapsed { grid-template-columns: 64px 1fr; }
+
+/* --- Sidebar ---------------------------------------------------- */
+.kna-sb {
+  background: var(--cream-card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.kna-sb-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 18px 14px;
+}
+.kna-sb-brand .mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--coral);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 15px;
+  flex: 0 0 auto;
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
+}
+.kna-sb-brand .name {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.005em;
+  color: var(--ink);
+}
+.kna-sb-brand .ver {
+  font-family: var(--serif);
+  font-variant-numeric: tabular-nums;
+  font-size: 10.5px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  margin-top: 1px;
+}
+
+.kna-sb-nav {
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  overflow-y: auto;
+}
+.kna-sb-group {
+  font-size: 10.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  padding: 14px 10px 4px;
+  font-weight: 600;
+}
+.kna-sb-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 7.5px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--ink-2);
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+}
+.kna-sb-item:hover { background: rgba(204, 120, 92, 0.05); }
+.kna-sb-item .ico {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+.kna-sb-item.active {
+  background: var(--coral-wash);
+  color: var(--coral-deeper);
+  font-weight: 600;
+}
+.kna-sb-item.active .ico { color: var(--coral-deep); }
+.kna-sb-item .badge {
+  margin-left: auto;
+  font-size: 10.5px;
+  font-family: var(--serif);
+  font-variant-numeric: tabular-nums;
+  background: var(--coral-wash);
+  color: var(--coral-deeper);
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.kna-sb-item.active .badge { background: #fff; }
+.kna-sb-item .kbd {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--muted-2);
+  font-family: var(--mono);
+}
+
+/* Collapsed sidebar */
+.collapsed .kna-sb-brand { padding: 18px 0 14px; justify-content: center; }
+.collapsed .kna-sb-brand .name,
+.collapsed .kna-sb-brand .ver,
+.collapsed .kna-sb-item span:not(.ico):not(.badge),
+.collapsed .kna-sb-group,
+.collapsed .kna-sb-foot .bdetail { display: none; }
+.collapsed .kna-sb-nav { padding: 6px 8px; align-items: center; }
+.collapsed .kna-sb-item {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  justify-content: center;
+}
+.collapsed .kna-sb-item .badge { display: none; }
+
+/* Sidebar footer — balance bar */
+.kna-sb-foot {
+  border-top: 1px solid var(--border);
+  padding: 12px 12px 14px;
+  background: var(--cream-card);
+}
+.kna-balance {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--coral-wash);
+  border: 1px solid var(--coral-tint);
+  border-radius: 10px;
+}
+.kna-balance .avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--coral-tint);
+  color: var(--coral-deeper);
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 11.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.kna-balance .meta { min-width: 0; flex: 1; }
+.kna-balance .em { font-size: 11px; color: var(--muted); line-height: 1.2; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+.kna-balance .bal { font-family: var(--serif); font-variant-numeric: tabular-nums; font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.1; margin-top: 1px; }
+.kna-balance .bal .cny { color: var(--muted); font-size: 11px; margin-left: 4px; font-weight: 400; }
+.kna-balance .topup {
+  background: var(--coral);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-family: var(--sans);
+}
+.collapsed .kna-sb-foot { padding: 12px 8px; }
+.collapsed .kna-balance { padding: 6px; background: transparent; border: 0; justify-content: center; }
+.collapsed .kna-balance .meta, .collapsed .kna-balance .topup { display: none; }
+
+/* --- Generic helpers ------------------------------------------- */
+.num { font-family: var(--serif); font-variant-numeric: tabular-nums; }
+.h1 { font-family: var(--serif); font-size: 28px; font-weight: 600; color: var(--ink); margin: 0; letter-spacing: -0.01em; }
+.h2 { font-family: var(--serif); font-size: 20px; font-weight: 600; color: var(--ink); margin: 0; letter-spacing: -0.005em; }
+.h3 { font-family: var(--serif); font-size: 16px; font-weight: 600; color: var(--ink); margin: 0; }
+.sub { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
+
+.kna-pagehead {
+  padding: 22px 32px 18px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+  transition: background 160ms cubic-bezier(.2,0,0,1), border-color 160ms;
+}
+.btn-solid { background: var(--coral); color: #fff; }
+.btn-solid:hover { background: var(--coral-deep); }
+.btn-deep { background: var(--coral-deep); color: #fff; }
+.btn-deep:hover { background: var(--coral-deeper); }
+.btn-subtle { background: #fff; color: var(--coral-deep); border-color: var(--border-strong); }
+.btn-subtle:hover { border-color: var(--coral-deep); }
+.btn-ghost { background: transparent; color: var(--ink-2); }
+.btn-ghost:hover { background: var(--cream-card); }
+.btn-danger { background: transparent; color: #b34532; border-color: #e2c0b8; }
+.btn-danger:hover { background: #fcf0ec; border-color: #b34532; }
+.btn-sm { padding: 6px 10px; font-size: 11.5px; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--ink-2);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.chip .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--muted-2); }
+.chip.on { background: #ecf6ee; border-color: #c4e2ca; color: #2e6b3a; }
+.chip.on .dot { background: #4fae5d; }
+.chip.coral { background: var(--coral-wash); border-color: var(--coral-tint); color: var(--coral-deeper); }
+.chip.coral .dot { background: var(--coral-deep); }
+.chip b { font-family: var(--serif); font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink); }
+
+.card {
+  background: var(--cream-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+}
+.card-coral { border-color: var(--coral-tint); }
+
+input.k-input, textarea.k-input, select.k-input {
+  width: 100%;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink);
+  outline: 0;
+  font-feature-settings: "cv11", "ss01";
+}
+input.k-input:focus, textarea.k-input:focus, select.k-input:focus {
+  border-color: var(--coral-deep);
+  box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.12);
+}
+input.k-input::placeholder, textarea.k-input::placeholder { color: var(--muted-2); }
+
+.lbl-tiny {
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.tog {
+  width: 32px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--border-strong);
+  position: relative;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: background 160ms;
+}
+.tog::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,.18);
+  transition: left 160ms;
+}
+.tog.on { background: var(--coral); }
+.tog.on::after { left: 16px; }
+
+/* Scrim/modal */
+.kna-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(31, 27, 22, 0.36);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+.kna-modal {
+  background: var(--cream);
+  border-radius: 14px;
+  box-shadow: 0 24px 60px -20px rgba(31, 27, 22, 0.4), 0 4px 12px rgba(31, 27, 22, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.kna-modal-head {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  background: var(--cream-card);
+}
+.kna-modal-body { padding: 22px 24px; }
+.kna-modal-foot {
+  padding: 14px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  background: var(--cream-card);
+}
+
+/* Section heads */
+.section-head {
+  font-family: var(--serif);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Dashed-add card */
+.add-card {
+  border: 1.5px dashed var(--border-strong);
+  border-radius: 14px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  gap: 8px;
+  min-height: 100%;
+}
+.add-card:hover { border-color: var(--coral-deep); color: var(--coral-deep); background: rgba(204,120,92,0.03); }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); padding: 0 32px; }
+.tab {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  padding: 11px 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.tab.active { color: var(--ink); border-bottom-color: var(--coral); font-weight: 600; }
+.tab:hover:not(.active) { color: var(--ink-2); }
+
+/* Tooltip-ish floating label (for collapsed sb) */
+.tip {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--ink);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 30;
+  font-family: var(--sans);
 }
