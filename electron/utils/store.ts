@@ -63,6 +63,11 @@ export interface AppSettings {
   // balance widget can scope its lookups.
   knaToken: string;
   knaEmail: string;
+
+  // Legacy bundle warning dismissed once-and-for-all. Set when the user
+  // ticks "Don't show again" on the stale /Applications/KNA Desktop.app
+  // warning dialog (see electron/main/legacy-bundle-check.ts).
+  legacyBundleDismissed: boolean;
 }
 
 /**
@@ -115,6 +120,9 @@ function createDefaultSettings(): AppSettings {
     selectedBundles: ['productivity', 'developer'],
     enabledSkills: [],
     disabledSkills: [],
+
+    // Legacy bundle warning starts as not-dismissed.
+    legacyBundleDismissed: false,
 
     // KNA SSO — empty until the user authorizes via /desktop-login.
     knaToken: '',

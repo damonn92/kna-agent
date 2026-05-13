@@ -58,6 +58,7 @@ import {
   extractDeepLinkFromArgv,
   handleDeepLink,
 } from './kna-deep-link';
+import { checkLegacyBundles } from './legacy-bundle-check';
 
 const WINDOWS_APP_USER_MODEL_ID = 'app.clawx.desktop';
 const isE2EMode = process.env.CLAWX_E2E === '1';
@@ -347,6 +348,13 @@ async function initialize(): Promise<void> {
   // Create system tray
   if (!isE2EMode) {
     createTray(window);
+  }
+
+  // One-shot check for stale legacy .app bundles in /Applications that
+  // share our bundleID and would otherwise cause duplicate Dock icons.
+  // Non-blocking: shows a dialog the user can dismiss permanently.
+  if (!isE2EMode) {
+    void checkLegacyBundles();
   }
 
   // Override security headers ONLY for the OpenClaw Gateway Control UI.

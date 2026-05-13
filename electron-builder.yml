@@ -17,7 +17,7 @@ artifactName: KNA-Desktop-${version}-${os}-${arch}.${ext}
 #   - Windows registry HKCR\kna-desktop on Win
 #   - MimeType x-scheme-handler/kna-desktop in the .desktop file on Linux
 protocols:
-  - name: KNA Desktop
+  - name: KNA Agent
     schemes:
       - kna-desktop
 
