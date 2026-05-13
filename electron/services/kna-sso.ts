@@ -20,6 +20,7 @@
 import { logger } from '../utils/logger';
 import { setSetting } from '../utils/store';
 import { getProviderService } from './providers/provider-service';
+import { saveProviderKeyToOpenClaw } from '../utils/openclaw-auth';
 import type { ProviderAccount } from '../../src/lib/providers';
 import type { GatewayManager } from '../gateway/manager';
 
@@ -96,7 +97,27 @@ export async function applyKnaSso(
     //    a separate store entry.
     await providerService.setDefaultAccount(KNA_PROVIDER_ACCOUNT_ID);
 
-    // 4. Light-touch gateway restart so the new key takes effect without
+    // 4. Push the same KNA token into OpenClaw runtime's auth-profiles.json
+    //    files (one per configured agent). Without this the gateway reports
+    //    "No API key found for provider <X>" — the Electron-side provider
+    //    store and the OpenClaw runtime auth store are two separate places.
+    //
+    //    KNA accepts the same sk- key on TWO upstream protocols:
+    //      * Anthropic Messages   → code.wearekna.com/anthropic/v1/messages
+    //      * OpenAI Chat Compl.   → code.wearekna.com/v1/chat/completions
+    //    so we write the key under BOTH provider names. Whichever protocol
+    //    the active agent chooses, the runtime finds a usable credential.
+    try {
+      await saveProviderKeyToOpenClaw('anthropic', trimmedToken);
+      await saveProviderKeyToOpenClaw('openai', trimmedToken);
+    } catch (err) {
+      // Non-fatal: chat IPC will still work via Electron-side routing, but
+      // OpenClaw-runtime agent calls (Main Agent / sub-agents) will 401.
+      // Surface clearly in logs so support can spot it.
+      logger.error('[KNA-SSO] Failed to write OpenClaw auth-profiles.json:', err);
+    }
+
+    // 5. Light-touch gateway restart so the new key takes effect without
     //    a process bounce. Debounce keeps rapid re-applies cheap.
     try {
       gatewayManager?.debouncedRestart(2000);
