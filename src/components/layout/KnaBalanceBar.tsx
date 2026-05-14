@@ -65,7 +65,19 @@ function formatCny(n: number): string {
   return n.toFixed(2);
 }
 
-export function KnaBalanceBar(): React.ReactElement | null {
+export interface KnaBalanceBarProps {
+  /**
+   * Visual variant. `top` is the legacy v0.3.x horizontal bar that
+   * sat between TitleBar and the sidebar/content row. `sidebar` is
+   * the v0.4.0 coral-wash pill that pins to the sidebar's bottom.
+   * Defaults to `top` so existing imports keep working.
+   */
+  variant?: 'top' | 'sidebar';
+}
+
+export function KnaBalanceBar({
+  variant = 'top',
+}: KnaBalanceBarProps = {}): React.ReactElement | null {
   // Pull both the token and the saved email from the renderer settings
   // store. The settings store hydrates from the main electron-store via
   // hostApiFetch('/api/settings') on mount (see settings.ts:init).
@@ -126,6 +138,88 @@ export function KnaBalanceBar(): React.ReactElement | null {
     && !knaToken.startsWith('sk-image-')
     && !knaToken.startsWith('sk-ant-');
 
+  // v0.4.0 sidebar variant — coral-wash pill that pins to the bottom
+  // of the sidebar (the new home for balance, per Claude Design spec).
+  // Avatar (initial) + email above, balance + 充值 button stacked.
+  // Falls through to the legacy "top bar" variant when variant != 'sidebar'
+  // so callers that still mount this at the top of the layout keep working.
+  if (variant === 'sidebar') {
+    const initial = (knaEmail?.[0] || '?').toUpperCase();
+    const displayEmail = knaEmail
+      || (state.kind === 'ok' ? state.data.email : '')
+      || '';
+
+    if (!loggedIn) {
+      // Pre-SSO sidebar foot: single coral CTA, no balance row.
+      return (
+        <button
+          type="button"
+          onClick={() => openExternal(LOGIN_URL)}
+          className="kna-sb-login no-drag"
+          style={{
+            width: '100%',
+            background: 'var(--coral)',
+            color: '#fff',
+            border: 0,
+            borderRadius: 10,
+            padding: '9px 12px',
+            fontFamily: 'var(--sans)',
+            fontSize: 12.5,
+            fontWeight: 600,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+          }}
+        >
+          用 KNA 账号登录 <span aria-hidden="true">→</span>
+        </button>
+      );
+    }
+
+    return (
+      <div className="kna-balance no-drag">
+        <div className="avatar">{initial}</div>
+        <div className="meta">
+          <div className="em" title={displayEmail}>
+            {displayEmail || '已登录 KNA'}
+          </div>
+          <div className="bal">
+            {state.kind === 'ok' ? (
+              <>
+                ${formatUsd(state.data.balance_usd)}
+                <span className="cny">¥{formatCny(state.data.balance_cny)}</span>
+              </>
+            ) : state.kind === 'error' ? (
+              <span style={{ color: 'var(--coral-deep)', fontSize: 11 }}>
+                <button
+                  type="button"
+                  onClick={refresh}
+                  title={state.message}
+                  style={{ background: 'transparent', border: 0, color: 'inherit', cursor: 'pointer', textDecoration: 'underline dotted', fontFamily: 'inherit' }}
+                >
+                  重试
+                </button>
+              </span>
+            ) : (
+              <span style={{ color: 'var(--kna-muted)', fontSize: 11 }}>余额加载中…</span>
+            )}
+          </div>
+        </div>
+        <button
+          type="button"
+          className="topup"
+          onClick={() => openExternal(PURCHASE_URL)}
+          title="打开 KNA 充值页"
+        >
+          充值
+        </button>
+      </div>
+    );
+  }
+
+  // Legacy top-bar variant — kept for backward compatibility.
   return (
     <div className="no-drag flex h-9 shrink-0 items-center justify-between gap-3 border-b border-line bg-[#FBF8F2] px-4 text-[13px] text-ink dark:bg-[#1F1A17] dark:text-[#E5DCD0] dark:border-[#2C2520]">
       {/* Left: identity / status */}
