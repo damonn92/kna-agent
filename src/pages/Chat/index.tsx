@@ -674,8 +674,8 @@ export function Chat() {
   return (
     <div
       ref={splitContainerRef}
-      className={cn('relative flex min-h-0 -m-6 transition-colors duration-500 dark:bg-background')}
-      style={{ height: 'calc(100vh - 2.5rem)' }}
+      className={cn('relative flex min-h-0 h-full transition-colors duration-500')}
+      style={{ background: 'var(--cream)' }}
     >
       {/* Left column: chat */}
       <div className="flex min-w-0 flex-1 flex-col">
