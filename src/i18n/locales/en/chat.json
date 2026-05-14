@@ -14,6 +14,25 @@
         "brainstorming": "Multi-Agent Parallel"
     },
     "noLogs": "(No logs available yet)",
+    "header": {
+        "newConversation": "New conversation",
+        "untitled": "Untitled conversation"
+    },
+    "rail": {
+        "currentAgent": "Current Agent",
+        "model": "Model",
+        "enabledSkills": "Enabled skills",
+        "addSkill": "Add skill",
+        "moreSkills": "+{{count}} more",
+        "inputTokens": "Input tokens",
+        "outputTokens": "Output tokens",
+        "viaKna": "via KNA",
+        "sessionCost": "This chat",
+        "agentDefault": "Default · auto-routed",
+        "agentCustom": "Custom Agent",
+        "modelDefault": "Default model",
+        "unknownAgent": "Not configured"
+    },
     "toolbar": {
         "refresh": "Refresh chat",
         "currentAgent": "Talking to {{agent}}",

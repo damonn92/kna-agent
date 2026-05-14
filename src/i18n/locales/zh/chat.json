@@ -14,6 +14,25 @@
         "brainstorming": "多智能体并行"
     },
     "noLogs": "（暂无日志）",
+    "header": {
+        "newConversation": "新对话",
+        "untitled": "未命名对话"
+    },
+    "rail": {
+        "currentAgent": "当前 Agent",
+        "model": "模型",
+        "enabledSkills": "已启用技能",
+        "addSkill": "添加技能",
+        "moreSkills": "+{{count}} 个",
+        "inputTokens": "输入 tokens",
+        "outputTokens": "输出 tokens",
+        "viaKna": "via KNA",
+        "sessionCost": "本对话",
+        "agentDefault": "默认 · 自动路由",
+        "agentCustom": "自定义 Agent",
+        "modelDefault": "默认模型",
+        "unknownAgent": "未配置"
+    },
     "toolbar": {
         "refresh": "刷新聊天",
         "currentAgent": "当前对话对象：{{agent}}",
