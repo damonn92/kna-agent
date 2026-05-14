@@ -18,6 +18,7 @@ import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { ExecutionGraphCard } from './ExecutionGraphCard';
 import { ChatToolbar } from './ChatToolbar';
+import { ChatRightRail } from './ChatRightRail';
 import { extractImages, extractText, extractThinking, extractToolUse, stripProcessMessagePrefix } from './message-utils';
 import { deriveTaskSteps, findReplyMessageIndex, parseSubagentCompletionInfo, type TaskStep } from './task-visualization';
 import { useTranslation } from 'react-i18next';
@@ -274,6 +275,12 @@ export function Chat() {
   const hasAnyStreamContent = hasStreamText || hasStreamThinking || hasStreamTools || hasStreamImages || hasStreamToolStatus;
 
   const isEmpty = messages.length === 0 && !sending;
+  const sessionTitle = useMemo(() => {
+    const fromLabels = sessionLabels?.[currentSessionKey]?.trim();
+    if (fromLabels) return fromLabels;
+    if (isEmpty) return t('header.newConversation', { defaultValue: '新对话' });
+    return t('header.untitled', { defaultValue: '未命名对话' });
+  }, [sessionLabels, currentSessionKey, isEmpty, t]);
   const subagentCompletionInfos = messages.map((message) => parseSubagentCompletionInfo(message));
   // Build an index of the *next* real user message after each position.
   // Gateway history may contain `role: 'user'` messages that are actually
@@ -679,8 +686,29 @@ export function Chat() {
     >
       {/* Left column: chat */}
       <div className="flex min-w-0 flex-1 flex-col">
-      {/* Toolbar */}
-      <div className="flex shrink-0 items-center justify-end px-4 py-2">
+      {/* Page header — conversation title + actions */}
+      <div
+        className="flex shrink-0 items-center gap-3"
+        style={{
+          padding: '12px 24px',
+          borderBottom: '1px solid var(--kna-border)',
+          background: 'var(--cream-card, var(--card))',
+        }}
+      >
+        <h2
+          className="min-w-0 flex-1 truncate"
+          style={{
+            fontFamily: 'var(--serif)',
+            fontWeight: 600,
+            fontSize: 15,
+            color: 'var(--ink, hsl(var(--foreground)))',
+            margin: 0,
+            lineHeight: 1.35,
+          }}
+          title={sessionTitle}
+        >
+          {sessionTitle}
+        </h2>
         <ChatToolbar />
       </div>
 
@@ -860,6 +888,10 @@ export function Chat() {
       />
       </div>
 
+      {/* Right rail — agent/model/skills context column. Hidden when the
+          artifact preview panel takes over the right slot. */}
+      {!panelOpen && <ChatRightRail />}
+
       {/* Right column: artifact / file preview panel (WorkBuddy-style) */}
       {panelOpen && (
         <>
@@ -912,15 +944,65 @@ function WelcomeScreen() {
 
   return (
     <div className="flex flex-col items-center justify-center text-center h-[60vh]">
-      <h1 className="text-4xl md:text-5xl font-serif text-foreground/80 mb-8 font-normal tracking-tight">
+      {/* Coral K mark to anchor the welcome state in the v0.4.0 brand */}
+      <div
+        aria-hidden
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: 14,
+          background: 'var(--coral, hsl(var(--primary)))',
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: 'var(--serif)',
+          fontWeight: 700,
+          fontSize: 26,
+          marginBottom: 22,
+          boxShadow: '0 2px 6px rgba(204,120,92,0.18)',
+        }}
+      >
+        K
+      </div>
+      <h1
+        style={{
+          fontFamily: 'var(--serif)',
+          fontWeight: 400,
+          fontSize: 38,
+          lineHeight: 1.15,
+          letterSpacing: '-0.01em',
+          color: 'var(--ink, hsl(var(--foreground)))',
+          marginBottom: 24,
+        }}
+      >
         {t('welcome.subtitle')}
       </h1>
 
       <div className="flex flex-wrap items-center justify-center gap-2.5 max-w-lg w-full">
         {quickActions.map(({ key, label }) => (
-          <button 
+          <button
             key={key}
-            className="px-4 py-1.5 rounded-full border border-black/10 dark:border-white/10 text-meta font-medium text-foreground/70 hover:bg-black/5 dark:hover:bg-white/5 transition-colors bg-black/[0.02]"
+            type="button"
+            style={{
+              padding: '6px 14px',
+              borderRadius: 999,
+              border: '1px solid var(--kna-border)',
+              background: 'var(--paper, #fff)',
+              color: 'var(--ink-2, hsl(var(--foreground)))',
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'border-color 120ms, color 120ms, background 120ms',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--coral-deep)';
+              e.currentTarget.style.color = 'var(--coral-deep)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--kna-border)';
+              e.currentTarget.style.color = 'var(--ink-2)';
+            }}
           >
             {label}
           </button>
