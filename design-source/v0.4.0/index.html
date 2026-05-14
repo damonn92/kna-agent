@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>KNA Agent v0.4.0 · 7-Page Redesign</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<link rel="stylesheet" href="app.css" />
+<style>
+  html, body { margin: 0; height: 100%; background: #efeae2; }
+  #root { height: 100vh; }
+  /* Make the canvas read like a "wall of mockups", not a webpage */
+  .dc-banner {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    z-index: 100; pointer-events: none;
+    background: var(--cream-card); border: 1px solid var(--border);
+    border-radius: 999px; padding: 7px 18px; box-shadow: var(--shadow-card);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .dc-banner .mk {
+    width: 18px; height: 18px; border-radius: 5px; background: var(--coral); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-weight: 700; font-size: 11px;
+  }
+  .dc-banner .ttl { font-family: var(--serif); font-size: 13px; font-weight: 600; color: var(--ink); letter-spacing: 0.005em; }
+  .dc-banner .sub { font-size: 11.5px; color: var(--muted); }
+  .dc-banner .v   { font-family: var(--mono); font-size: 11px; color: var(--coral-deeper); background: var(--coral-wash); padding: 2px 7px; border-radius: 999px; }
+</style>
+</head>
+<body>
+
+<div class="dc-banner">
+  <span class="mk">K</span>
+  <span class="ttl">KNA Agent</span>
+  <span class="sub">7 页 · 14 frame 重设</span>
+  <span class="v">v0.4.0</span>
+</div>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="app-shell.jsx"></script>
+<script type="text/babel" src="pages/chat.jsx"></script>
+<script type="text/babel" src="pages/models.jsx"></script>
+<script type="text/babel" src="pages/agents.jsx"></script>
+<script type="text/babel" src="pages/channels.jsx"></script>
+<script type="text/babel" src="pages/skills.jsx"></script>
+<script type="text/babel" src="pages/scheduled.jsx"></script>
+<script type="text/babel" src="pages/settings.jsx"></script>
+
+<script type="text/babel">
+const W = 1280;
+const H = 800;
+
+function App() {
+  return (
+    <DesignCanvas>
+      <DCSection id="chat"    title="1 · Chat"      subtitle="默认对话流 / 思考链 + 工具调用流式状态">
+        <DCArtboard id="chat-default"    label="Default · 三栏对话" width={W} height={H}><ChatDefault /></DCArtboard>
+        <DCArtboard id="chat-streaming"  label="Streaming · thinking + tool_use" width={W} height={H}><ChatStreaming /></DCArtboard>
+      </DCSection>
+
+      <DCSection id="models"  title="2 · Models"    subtitle="Provider 卡片网格 / 编辑 modal">
+        <DCArtboard id="models-grid"  label="Default · Provider 卡片"  width={W} height={H}><ModelsGrid /></DCArtboard>
+        <DCArtboard id="models-edit"  label="Modal · 编辑 Anthropic"   width={W} height={H}><ModelsEditModal /></DCArtboard>
+      </DCSection>
+
+      <DCSection id="agents"  title="3 · Agents"    subtitle="Agent 卡片网格 / 全屏编辑器">
+        <DCArtboard id="agents-grid"   label="Default · Agent 卡片"    width={W} height={H}><AgentsGrid /></DCArtboard>
+        <DCArtboard id="agents-editor" label="Editor · 双栏编辑器"     width={W} height={H}><AgentsEditor /></DCArtboard>
+      </DCSection>
+
+      <DCSection id="channels" title="4 · Channels" subtitle="频道列表 / 内联配置展开">
+        <DCArtboard id="channels-list"     label="Default · Channel 列表"   width={W} height={H}><ChannelsList /></DCArtboard>
+        <DCArtboard id="channels-expanded" label="Expanded · 飞书内联配置"  width={W} height={H}><ChannelsExpanded /></DCArtboard>
+      </DCSection>
+
+      <DCSection id="skills"  title="5 · Skills"    subtitle="已装技能 / 市场浏览">
+        <DCArtboard id="skills-installed" label="Default · 已装技能 + 详情"  width={W} height={H}><SkillsInstalled /></DCArtboard>
+        <DCArtboard id="skills-market"    label="Market · 跨境电商技能包"     width={W} height={H}><SkillsMarket /></DCArtboard>
+      </DCSection>
+
+      <DCSection id="cron"    title="6 · Scheduled" subtitle="任务表格 / 新建任务 modal">
+        <DCArtboard id="cron-list"  label="Default · 任务表格"   width={W} height={H}><ScheduledList /></DCArtboard>
+        <DCArtboard id="cron-modal" label="Modal · 新建任务"     width={W} height={H}><ScheduledModal /></DCArtboard>
+      </DCSection>
+
+      <DCSection id="settings" title="7 · Settings" subtitle="General + Account / Appearance + Updates">
+        <DCArtboard id="settings-general"    label="General · 启动 / 语言 / 热键 / 账户"        width={W} height={H}><SettingsGeneral /></DCArtboard>
+        <DCArtboard id="settings-appearance" label="Appearance · 主题 / 字号 / 更新 / 危险"     width={W} height={H}><SettingsAppearance /></DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+</body>
+</html>
