@@ -472,18 +472,18 @@ export function Settings() {
   };
 
   return (
-    <div data-testid="settings-page" className="flex flex-col -m-6 dark:bg-background h-[calc(100vh-2.5rem)] overflow-hidden">
-      <div className="w-full max-w-5xl mx-auto flex flex-col h-full p-10 pt-16">
+    <div
+      data-testid="settings-page"
+      className="flex flex-col h-full overflow-hidden"
+      style={{ background: 'var(--cream)' }}
+    >
+      <div className="w-full max-w-5xl mx-auto flex flex-col h-full" style={{ padding: '8px 32px 0' }}>
 
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between mb-12 shrink-0 gap-4">
+        {/* Header — v0.4.0 page-head */}
+        <div className="kna-pagehead shrink-0" style={{ padding: '22px 0 18px' }}>
           <div>
-            <h1 className="text-5xl md:text-6xl font-serif text-foreground mb-3 font-normal tracking-tight">
-              {t('title')}
-            </h1>
-            <p className="text-subtitle text-foreground/70 font-medium">
-              {t('subtitle')}
-            </p>
+            <h1 className="h1">{t('title')}</h1>
+            <p className="sub">{t('subtitle')}</p>
           </div>
         </div>
 
@@ -492,7 +492,7 @@ export function Settings() {
 
           {/* Appearance */}
           <div>
-            <h2 className="text-3xl font-serif text-foreground mb-6 font-normal tracking-tight">
+            <h2 className="h2" style={{ fontSize: 20, marginBottom: 16 }}>
               {t('appearance.title')}
             </h2>
             <div className="space-y-6">
@@ -559,7 +559,7 @@ export function Settings() {
 
           {/* Gateway */}
           <div>
-            <h2 className="text-3xl font-serif text-foreground mb-6 font-normal tracking-tight">
+            <h2 className="h2" style={{ fontSize: 20, marginBottom: 16 }}>
               {t('gateway.title')}
             </h2>
             <div className="space-y-6">
@@ -664,7 +664,7 @@ export function Settings() {
             <>
               <Separator className="bg-black/5 dark:bg-white/5" />
               <div data-testid="settings-developer-section">
-                <h2 data-testid="settings-developer-title" className="text-3xl font-serif text-foreground mb-6 font-normal tracking-tight">
+                <h2 data-testid="settings-developer-title" className="h2" style={{ fontSize: 20, marginBottom: 16 }}>
                   {t('developer.title')}
                 </h2>
                 <div className="space-y-8">
@@ -1037,7 +1037,7 @@ export function Settings() {
 
           {/* Updates */}
           <div>
-            <h2 className="text-3xl font-serif text-foreground mb-6 font-normal tracking-tight">
+            <h2 className="h2" style={{ fontSize: 20, marginBottom: 16 }}>
               {t('updates.title')}
             </h2>
             <div className="space-y-6">
@@ -1078,7 +1078,7 @@ export function Settings() {
 
           {/* About */}
           <div>
-            <h2 className="text-3xl font-serif text-foreground mb-6 font-normal tracking-tight">
+            <h2 className="h2" style={{ fontSize: 20, marginBottom: 16 }}>
               {t('about.title')}
             </h2>
             <div className="space-y-3 text-sm text-muted-foreground">

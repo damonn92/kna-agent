@@ -492,28 +492,31 @@ export function Skills() {
 
   if (loading) {
     return (
-      <div className="flex flex-col -m-6 dark:bg-background min-h-[calc(100vh-2.5rem)] items-center justify-center">
+      <div
+        className="flex flex-col h-full items-center justify-center"
+        style={{ background: 'var(--cream)' }}
+      >
         <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
-    <div data-testid="skills-page" className="flex flex-col -m-6 dark:bg-background h-[calc(100vh-2.5rem)] overflow-hidden">
-      <div className="w-full max-w-5xl mx-auto flex flex-col h-full p-10 pt-16">
+    <div
+      data-testid="skills-page"
+      className="flex flex-col h-full overflow-hidden"
+      style={{ background: 'var(--cream)' }}
+    >
+      <div className="w-full max-w-5xl mx-auto flex flex-col h-full" style={{ padding: '8px 32px 0' }}>
 
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between mb-6 shrink-0 gap-4">
+        {/* Header — v0.4.0 page-head */}
+        <div className="kna-pagehead shrink-0" style={{ padding: '22px 0 18px' }}>
           <div>
-            <h1 className="text-5xl md:text-6xl font-serif text-foreground mb-3 font-normal tracking-tight">
-              {t('title')}
-            </h1>
-            <p className="text-subtitle text-foreground/70 font-medium">
-              {t('subtitle')}
-            </p>
+            <h1 className="h1">{t('title')}</h1>
+            <p className="sub">{t('subtitle')}</p>
           </div>
 
-          <div className="flex items-center gap-3 md:mt-2">
+          <div className="flex items-center gap-3">
             {hasInstalledSkills && (
               <button
                 onClick={handleOpenSkillsFolder}
