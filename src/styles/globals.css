@@ -674,6 +674,13 @@
 .btn-deep:hover { background: var(--coral-deeper); }
 .btn-subtle { background: #fff; color: var(--coral-deep); border-color: var(--border-strong); }
 .btn-subtle:hover { border-color: var(--coral-deep); }
+
+/* Round coral send button (chat composer) — inline-styled for state, but
+   uses these rules for hover/active feedback so all three states share the
+   same coral palette. */
+.kna-send:not(:disabled):hover { filter: brightness(0.96); }
+.kna-send:not(:disabled):active { transform: translateY(0.5px); filter: brightness(0.92); }
+.kna-send:disabled { cursor: not-allowed; opacity: 1; }
 .btn-ghost { background: transparent; color: var(--ink-2); }
 .btn-ghost:hover { background: var(--cream-card); }
 .btn-danger { background: transparent; color: #b34532; border-color: #e2c0b8; }

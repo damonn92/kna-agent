@@ -757,10 +757,11 @@ export function ChatInput({ onSend, onStop, disabled = false, sending = false, i
 
   return (
     <div
-      className={cn(
-        "p-4 pb-6 w-full mx-auto transition-all duration-300",
-        isEmpty ? "max-w-3xl" : "max-w-4xl"
-      )}
+      className="w-full mx-auto transition-all duration-300"
+      style={{
+        padding: '12px 28px 18px',
+        maxWidth: isEmpty ? 760 : 880,
+      }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -779,8 +780,17 @@ export function ChatInput({ onSend, onStop, disabled = false, sending = false, i
           </div>
         )}
 
-        {/* Input Container */}
-        <div className={`relative bg-white dark:bg-card rounded-2xl shadow-sm border px-3 pt-2.5 pb-1.5 transition-all ${dragOver ? 'border-primary ring-1 ring-primary' : 'border-black/10 dark:border-white/10'}`}>
+        {/* Input Container — v0.4.0 paper card */}
+        <div
+          className={`relative transition-all ${dragOver ? 'ring-1 ring-primary' : ''}`}
+          style={{
+            background: 'var(--paper, #fff)',
+            border: `1px solid ${dragOver ? 'var(--coral, hsl(var(--primary)))' : 'var(--border, rgba(0,0,0,0.08))'}`,
+            borderRadius: 14,
+            boxShadow: 'var(--shadow-card, 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(204,120,92,0.06))',
+            padding: '10px 12px 8px',
+          }}
+        >
           {selectedTarget && (
             <div className="flex flex-wrap gap-2 pb-1.5">
               <button
@@ -1028,17 +1038,28 @@ export function ChatInput({ onSend, onStop, disabled = false, sending = false, i
               </div>
             )}
 
-            {/* Send Button — pushed to the right */}
+            {/* Send Button — coral round v0.4.0 */}
             <Button
               onClick={sending ? handleStop : handleSend}
               disabled={sending ? !canStop : !canSend}
               size="icon"
               data-testid="chat-composer-send"
-              className={`ml-auto shrink-0 h-8 w-8 rounded-lg transition-colors ${
-                (sending || canSend)
-                  ? 'bg-black/5 dark:bg-white/10 text-foreground hover:bg-black/10 dark:hover:bg-white/20'
-                  : 'text-muted-foreground/50 hover:bg-transparent bg-transparent'
-              }`}
+              className="ml-auto shrink-0 transition-all kna-send"
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 999,
+                background:
+                  sending || canSend
+                    ? 'var(--coral, hsl(var(--primary)))'
+                    : 'var(--coral-tint, rgba(204,120,92,0.12))',
+                color: sending || canSend ? '#fff' : 'var(--coral-deep, hsl(var(--primary)))',
+                border: 0,
+                boxShadow:
+                  sending || canSend
+                    ? '0 1px 3px rgba(204,120,92,0.30), 0 1px 1px rgba(0,0,0,0.06)'
+                    : 'none',
+              }}
               variant="ghost"
               title={sending ? t('composer.stop') : t('composer.send')}
             >
