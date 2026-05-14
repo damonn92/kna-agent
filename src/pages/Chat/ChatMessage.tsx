@@ -5,7 +5,7 @@
  * surfaced via ExecutionGraphCard, not inside message bubbles.
  */
 import { useState, useCallback, useEffect, memo } from 'react';
-import { Sparkles, Copy, Check, ChevronDown, ChevronRight, Wrench, FileText, Film, Music, FileArchive, File, X, FolderOpen, ZoomIn, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Copy, Check, ChevronDown, ChevronRight, Wrench, FileText, Film, Music, FileArchive, File, X, FolderOpen, ZoomIn, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -309,10 +309,30 @@ export const ChatMessage = memo(function ChatMessage({
         isUser ? 'flex-row-reverse' : 'flex-row',
       )}
     >
-      {/* Avatar */}
+      {/* Avatar — KNA coral "K" square (v0.4.0 design language). Replaces
+          the v0.3.x neutral Sparkles puck. The serif K + coral square
+          mirrors the brand mark in the sidebar and titlebar so the
+          assistant identity reads as "KNA" at a glance. */}
       {!isUser && (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full mt-1 bg-black/5 dark:bg-white/5 text-foreground">
-          <Sparkles className="h-4 w-4" />
+        <div
+          className="shrink-0 mt-1"
+          aria-hidden="true"
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 9,
+            background: 'var(--coral)',
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontFamily: 'var(--serif)',
+            fontWeight: 700,
+            fontSize: 14,
+            boxShadow: 'inset 0 -1px 0 rgba(0,0,0,0.10)',
+          }}
+        >
+          K
         </div>
       )}
 
