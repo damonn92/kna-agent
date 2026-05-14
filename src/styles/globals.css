@@ -224,9 +224,22 @@
     @apply border-border;
   }
 
+  /* Lock the document tree to viewport height so every `height: 100%`
+     descendant has an anchor to compute against. Without this, the
+     `.kna-app` grid silently falls back to `height: auto` (= content
+     height), which breaks `h-full` chains inside Chat / page bodies
+     (the composer floats mid-screen instead of pinning to the bottom). */
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    overflow: hidden;
   }
 }
 

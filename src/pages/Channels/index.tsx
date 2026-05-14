@@ -510,7 +510,7 @@ export function Channels() {
   if (loading && !hasStableValue) {
     return (
       <div
-        className="flex flex-col h-full items-center justify-center"
+        className="flex flex-col flex-1 min-h-0 items-center justify-center"
         style={{ background: 'var(--cream)' }}
       >
         <LoadingSpinner size="lg" />
@@ -521,10 +521,10 @@ export function Channels() {
   return (
     <div
       data-testid="channels-page"
-      className="flex flex-col h-full overflow-hidden"
+      className="flex flex-col flex-1 min-h-0 overflow-hidden"
       style={{ background: 'var(--cream)' }}
     >
-      <div className="w-full max-w-5xl mx-auto flex flex-col h-full" style={{ padding: '8px 32px 0' }}>
+      <div className="w-full max-w-5xl mx-auto flex flex-col flex-1 min-h-0" style={{ padding: '8px 32px 0' }}>
         <div className="kna-pagehead shrink-0" style={{ padding: '22px 0 18px' }}>
           <div>
             <h1 className="h1">{t('title')}</h1>

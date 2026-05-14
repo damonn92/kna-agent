@@ -37,12 +37,19 @@ export function MainLayout() {
           inside <TitleBar /> take over. */}
       <TitleBar />
 
-      {/* Body row: sidebar + scrollable main pane */}
+      {/* Body row: sidebar + scrollable main pane.
+          <main> is a flex column so the routed page (Chat / Models /
+          …) can use `flex-1` for full-height layouts that pin the
+          composer / page footer to the bottom. `min-h-0` is critical:
+          without it, the grid child has implicit `min-height: auto`
+          (= content), which prevents `flex-1` from shrinking inside,
+          and the inner overflow-y-auto stops working — the whole
+          page scrolls instead. */}
       <div className={`kna-body with-sidebar${sidebarCollapsed ? ' collapsed' : ''}`}>
         <Sidebar />
         <main
           data-testid="main-content"
-          className="min-w-0 overflow-auto"
+          className="min-w-0 min-h-0 flex flex-col overflow-hidden"
           style={{ background: 'var(--cream)' }}
         >
           <Outlet />
