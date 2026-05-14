@@ -11,8 +11,6 @@ import {
   Puzzle,
   Clock,
   Settings as SettingsIcon,
-  PanelLeftClose,
-  PanelLeft,
   Plus,
   Terminal,
   ExternalLink,
@@ -28,11 +26,10 @@ import { useGatewayStore } from '@/stores/gateway';
 import { useAgentsStore } from '@/stores/agents';
 import { getSessionActivityMs, getSessionBucket, type SessionBucketKey } from './session-buckets';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { hostApiFetch } from '@/lib/host-api';
 import { useTranslation } from 'react-i18next';
-import logoSvg from '@/assets/logo.svg';
+import { KnaBalanceBar } from './KnaBalanceBar';
 
 interface NavItemProps {
   to: string;
@@ -50,34 +47,14 @@ function NavItem({ to, icon, label, badge, collapsed, onClick, testId }: NavItem
       to={to}
       onClick={onClick}
       data-testid={testId}
+      title={collapsed ? label : undefined}
       className={({ isActive }) =>
-        cn(
-          'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors',
-          'hover:bg-black/5 dark:hover:bg-white/5 text-foreground/80',
-          isActive
-            ? 'bg-black/5 dark:bg-white/10 text-foreground'
-            : '',
-          collapsed && 'justify-center px-0'
-        )
+        cn('kna-sb-item', isActive && 'active', collapsed && 'is-collapsed')
       }
     >
-      {({ isActive }) => (
-        <>
-          <div className={cn("flex shrink-0 items-center justify-center", isActive ? "text-foreground" : "text-muted-foreground")}>
-            {icon}
-          </div>
-          {!collapsed && (
-            <>
-              <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{label}</span>
-              {badge && (
-                <Badge variant="secondary" className="ml-auto shrink-0">
-                  {badge}
-                </Badge>
-              )}
-            </>
-          )}
-        </>
-      )}
+      <span className="ico">{icon}</span>
+      {!collapsed && <span>{label}</span>}
+      {!collapsed && badge && <span className="badge">{badge}</span>}
     </NavLink>
   );
 }
@@ -92,7 +69,7 @@ function getAgentIdFromSessionKey(sessionKey: string): string {
 
 export function Sidebar() {
   const sidebarCollapsed = useSettingsStore((state) => state.sidebarCollapsed);
-  const setSidebarCollapsed = useSettingsStore((state) => state.setSidebarCollapsed);
+  // setSidebarCollapsed now lives on the TitleBar (global app shell toggle).
   const devModeUnlocked = useSettingsStore((state) => state.devModeUnlocked);
 
   const sessions = useChatStore((s) => s.sessions);
@@ -221,39 +198,23 @@ export function Sidebar() {
   ];
 
   return (
-    <aside
-      data-testid="sidebar"
-      className={cn(
-        'flex min-h-0 shrink-0 flex-col overflow-hidden border-r bg-surface-sidebar/60 transition-all duration-300',
-        sidebarCollapsed ? 'w-16' : 'w-64'
-      )}
-    >
-      {/* Top Header Toggle */}
-      <div className={cn("flex items-center p-2 h-12", sidebarCollapsed ? "justify-center" : "justify-between")}>
+    <aside data-testid="sidebar" className="kna-sb">
+      {/* Brand block — coral K mark + serif "KNA Agent" + version tag.
+          Toggle button moved to the global TitleBar so it's reachable
+          from anywhere in the app, not just inside the sidebar. */}
+      <div className="kna-sb-brand">
+        <div className="mark">K</div>
         {!sidebarCollapsed && (
-          <div className="flex items-center gap-2 px-2 overflow-hidden">
-            <img src={logoSvg} alt="KNA Agent" className="h-5 w-auto shrink-0" />
-            <span className="text-sm font-semibold truncate whitespace-nowrap text-foreground/90">
-              KNA Agent
-            </span>
+          <div style={{ minWidth: 0 }}>
+            <div className="name">KNA Agent</div>
+            <div className="ver">v0.4.0 · BETA</div>
           </div>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 shrink-0 text-muted-foreground hover:bg-black/5 dark:hover:bg-white/10"
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        >
-          {sidebarCollapsed ? (
-            <PanelLeft className="h-[18px] w-[18px]" />
-          ) : (
-            <PanelLeftClose className="h-[18px] w-[18px]" />
-          )}
-        </Button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex flex-col px-2 gap-0.5">
+      <div className="kna-sb-nav">
+        {!sidebarCollapsed && <div className="kna-sb-group">工作台</div>}
         <button
           data-testid="sidebar-new-chat"
           onClick={() => {
@@ -261,34 +222,37 @@ export function Sidebar() {
             if (messages.length > 0) newSession();
             navigate('/');
           }}
-          className={cn(
-            'flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors mb-2',
-            'bg-black/5 dark:bg-accent shadow-none border border-transparent text-foreground',
-            sidebarCollapsed && 'justify-center px-0',
-          )}
+          className={cn('kna-sb-item', sidebarCollapsed && 'is-collapsed')}
+          title={sidebarCollapsed ? t('sidebar.newChat') : undefined}
+          style={{
+            background: 'transparent',
+            border: 0,
+            width: '100%',
+            textAlign: 'left',
+            cursor: 'pointer',
+            marginBottom: 6,
+          }}
         >
-          <div className="flex shrink-0 items-center justify-center text-foreground/80">
-            <Plus className="h-[18px] w-[18px]" strokeWidth={2} />
-          </div>
-          {!sidebarCollapsed && <span className="flex-1 text-left overflow-hidden text-ellipsis whitespace-nowrap">{t('sidebar.newChat')}</span>}
+          <span className="ico"><Plus className="h-[18px] w-[18px]" strokeWidth={1.7} /></span>
+          {!sidebarCollapsed && <span>{t('sidebar.newChat')}</span>}
+          {!sidebarCollapsed && (
+            <span className="kbd" style={{ marginLeft: 'auto' }}>⌘N</span>
+          )}
         </button>
 
         {navItems.map((item) => (
-          <NavItem
-            key={item.to}
-            {...item}
-            collapsed={sidebarCollapsed}
-          />
+          <NavItem key={item.to} {...item} collapsed={sidebarCollapsed} />
         ))}
-      </nav>
 
-      {/* Session list — below Settings, only when expanded */}
+      {/* Session list — pulled inline into the same scrollable .kna-sb-nav
+          so the whole left rail scrolls as one column. Group labels use
+          the same .kna-sb-group style as the top "工作台" header. */}
       {!sidebarCollapsed && sessions.length > 0 && (
-        <div className="mt-4 flex-1 overflow-y-auto overflow-x-hidden px-2 pb-2 space-y-0.5">
+        <div style={{ marginTop: 4 }}>
           {sessionBuckets.map((bucket) => (
             bucket.sessions.length > 0 ? (
-              <div key={bucket.key} data-testid={`session-bucket-${bucket.key}`} className="pt-2">
-                <div className="px-2.5 pb-1 text-tiny font-medium text-muted-foreground/60 tracking-tight">
+              <div key={bucket.key} data-testid={`session-bucket-${bucket.key}`}>
+                <div className="kna-sb-group">
                   {bucket.label}
                 </div>
                 {bucket.sessions.map((s) => {
@@ -339,52 +303,46 @@ export function Sidebar() {
         </div>
       )}
 
-      {/* Footer */}
-      <div className="p-2 mt-auto">
+      </div>{/* end .kna-sb-nav */}
+
+      {/* Sidebar foot — Settings link + KNA balance pill. Always
+          pinned to the bottom thanks to .kna-sb-nav's flex:1. */}
+      <div className="kna-sb-foot" style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8, borderTop: '1px solid var(--border)' }}>
         <NavLink
-            to="/settings"
-            data-testid="sidebar-nav-settings"
-            className={({ isActive }) =>
-              cn(
-                'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors',
-                'hover:bg-black/5 dark:hover:bg-white/5 text-foreground/80',
-                isActive && 'bg-black/5 dark:bg-white/10 text-foreground',
-                sidebarCollapsed ? 'justify-center px-0' : ''
-              )
-            }
-          >
-          {({ isActive }) => (
-            <>
-              <div className={cn("flex shrink-0 items-center justify-center", isActive ? "text-foreground" : "text-muted-foreground")}>
-                <SettingsIcon className="h-[18px] w-[18px]" strokeWidth={2} />
-              </div>
-              {!sidebarCollapsed && <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{t('sidebar.settings')}</span>}
-            </>
-          )}
+          to="/settings"
+          data-testid="sidebar-nav-settings"
+          title={sidebarCollapsed ? t('sidebar.settings') : undefined}
+          className={({ isActive }) =>
+            cn('kna-sb-item', isActive && 'active', sidebarCollapsed && 'is-collapsed')
+          }
+        >
+          <span className="ico"><SettingsIcon className="h-[18px] w-[18px]" strokeWidth={1.7} /></span>
+          {!sidebarCollapsed && <span>{t('sidebar.settings')}</span>}
         </NavLink>
 
         {devModeUnlocked && (
           <Button
             data-testid="sidebar-open-dev-console"
             variant="ghost"
-            className={cn(
-              'flex items-center gap-2.5 rounded-lg px-2.5 py-2 h-auto text-sm font-medium transition-colors w-full mt-1',
-              'hover:bg-black/5 dark:hover:bg-white/5 text-foreground/80',
-              sidebarCollapsed ? 'justify-center px-0' : 'justify-start'
-            )}
+            className={cn('kna-sb-item', sidebarCollapsed && 'is-collapsed')}
             onClick={openDevConsole}
+            style={{ height: 'auto', justifyContent: sidebarCollapsed ? 'center' : 'flex-start', padding: '7.5px 10px' }}
           >
-            <div className="flex shrink-0 items-center justify-center text-muted-foreground">
-              <Terminal className="h-[18px] w-[18px]" strokeWidth={2} />
-            </div>
+            <span className="ico"><Terminal className="h-[18px] w-[18px]" strokeWidth={1.7} /></span>
             {!sidebarCollapsed && (
               <>
-                <span className="flex-1 text-left overflow-hidden text-ellipsis whitespace-nowrap">{t('common:sidebar.openClawPage')}</span>
+                <span>{t('common:sidebar.openClawPage')}</span>
                 <ExternalLink className="h-3 w-3 shrink-0 ml-auto opacity-50 text-muted-foreground" />
               </>
             )}
           </Button>
         )}
+
+        {/* Balance / SSO pill — coral-wash card with email + ¥/$ balance
+            + 充值 button, or a single coral CTA when not yet signed in.
+            Hidden when sidebar is collapsed (just an avatar dot would
+            be ambiguous; user can expand to manage account). */}
+        {!sidebarCollapsed && <KnaBalanceBar variant="sidebar" />}
       </div>
 
       <ConfirmDialog
