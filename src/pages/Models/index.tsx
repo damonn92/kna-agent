@@ -274,10 +274,10 @@ export function Models() {
   return (
     <div
       data-testid="models-page"
-      className="flex flex-col h-full overflow-hidden"
+      className="flex flex-col flex-1 min-h-0 overflow-hidden"
       style={{ background: 'var(--cream)' }}
     >
-      <div className="w-full max-w-5xl mx-auto flex flex-col h-full" style={{ padding: '8px 32px 0' }}>
+      <div className="w-full max-w-5xl mx-auto flex flex-col flex-1 min-h-0" style={{ padding: '8px 32px 0' }}>
 
         {/* Header — v0.4.0 page-head */}
         <div className="kna-pagehead shrink-0" style={{ padding: '22px 0 18px' }}>

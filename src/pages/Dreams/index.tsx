@@ -395,7 +395,11 @@ export function Dreams() {
   ];
 
   return (
-    <div data-testid="dreams-page" className="flex h-[calc(100vh-2.5rem)] min-h-0 flex-col overflow-hidden -m-6 bg-background">
+    <div
+      data-testid="dreams-page"
+      className="flex flex-1 min-h-0 flex-col overflow-hidden"
+      style={{ background: 'var(--cream)' }}
+    >
       <header className="flex shrink-0 items-center justify-between gap-4 px-10 pb-6 pt-8">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
